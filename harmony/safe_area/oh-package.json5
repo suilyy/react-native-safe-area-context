@@ -1,0 +1,13 @@
+{
+  "license": "ISC",
+  "types": "",
+  "devDependencies": {
+    "rnoh": "file:../rnoh"
+  },
+  "author": "",
+  "name": "safe_area_context",
+  "description": "Please describe the basic information.",
+  "main": "./index.ets",
+  "version": "1.0.0",
+  "dependencies": {}
+}

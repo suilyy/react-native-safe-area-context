@@ -18,7 +18,8 @@
     "*.podspec",
     "react-native.config.js",
     "!**/__tests__",
-    "!example"
+    "!example",
+    "harmony"
   ],
   "author": "Janic Duplessis <janicduplessis@gmail.com>",
   "contributors": [

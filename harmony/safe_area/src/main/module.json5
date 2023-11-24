@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "safe_area_context",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}
