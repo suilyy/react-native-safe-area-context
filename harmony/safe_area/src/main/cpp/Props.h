@@ -1,4 +1,4 @@
-/*
+/**
  * MIT License
  *
  * Copyright (C) 2021 Huawei Device Co., Ltd.
@@ -13,7 +13,7 @@
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANT KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -40,7 +40,7 @@ namespace facebook {
 #pragma mark - Props
         };
 
-        enum class RNCSafeAreaViewMode { Padding, Margin };
+        enum class RNCSafeAreaViewMode { PADDING, MARGIN };
 
         struct RNCSafeAreaViewEdgesStruct {
             std::string top;
@@ -63,7 +63,7 @@ namespace facebook {
 
 #pragma mark - Props
 
-            RNCSafeAreaViewMode mode{RNCSafeAreaViewMode::Padding};
+            RNCSafeAreaViewMode mode{RNCSafeAreaViewMode::PADDING};
             RNCSafeAreaViewEdgesStruct edges{};
             double paddingTop{0.0};
         };

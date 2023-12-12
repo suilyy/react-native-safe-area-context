@@ -1,4 +1,4 @@
-/*
+/**
  * MIT License
  *
  * Copyright (C) 2021 Huawei Device Co., Ltd.
@@ -13,7 +13,7 @@
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANT KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 #include "Props.h"
@@ -38,41 +37,45 @@ namespace facebook {
                                                    const RNCSafeAreaViewProps &sourceProps, const RawProps &rawProps)
             : ViewProps(context, sourceProps, rawProps),
 
-              mode(convertRawProp(context, rawProps, "mode", sourceProps.mode, {RNCSafeAreaViewMode::Padding})),
+              mode(convertRawProp(context, rawProps, "mode", sourceProps.mode, {RNCSafeAreaViewMode::PADDING})),
               edges(convertRawProp(context, rawProps, "edges", sourceProps.edges, {})),
               paddingTop(convertRawProp(context, rawProps, "paddingTop", sourceProps.paddingTop, {0.0}))
 
         {}
 
-        std::string toString(const RNCSafeAreaViewEdgesStruct &value) {
+        std::string toString(const RNCSafeAreaViewEdgesStruct &value)
+        {
             std::string result = "{\"top\":\"" + value.top + "\",\"right\":\"" + value.right + "\",\"bottom\":\"" +
                                  value.bottom + "\",\"left\":\"" + value.left + "\"}";
             return result;
         }
 
-        std::string toString(const RNCSafeAreaViewMode &value) {
+        std::string toString(const RNCSafeAreaViewMode &value)
+        {
             switch (value) {
-            case RNCSafeAreaViewMode::Padding:
-                return "padding";
-            case RNCSafeAreaViewMode::Margin:
-                return "margin";
+                case RNCSafeAreaViewMode::PADDING:
+                    return "padding";
+                case RNCSafeAreaViewMode::MARGIN:
+                    return "margin";
             }
         }
 
-        void fromRawValue(const PropsParserContext &context, const RawValue &value, RNCSafeAreaViewMode &result) {
+        void fromRawValue(const PropsParserContext &context, const RawValue &value, RNCSafeAreaViewMode &result)
+        {
             auto string = (std::string)value;
             if (string == "padding") {
-                result = RNCSafeAreaViewMode::Padding;
+                result = RNCSafeAreaViewMode::PADDING;
                 return;
             }
             if (string == "margin") {
-                result = RNCSafeAreaViewMode::Margin;
+                result = RNCSafeAreaViewMode::MARGIN;
                 return;
             }
         }
 
         void fromRawValue(const PropsParserContext &context, const RawValue &value,
-                          RNCSafeAreaViewEdgesStruct &result) {
+                          RNCSafeAreaViewEdgesStruct &result)
+        {
             auto map = (butter::map<std::string, RawValue>)value;
             auto tmp_top = map.find("top");
             if (tmp_top != map.end()) {

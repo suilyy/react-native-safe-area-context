@@ -5,7 +5,7 @@
     "rnoh": "file:../rnoh"
   },
   "author": "",
-  "name": "safe_area_context",
+  "name": "safe_area",
   "description": "Please describe the basic information.",
   "main": "./index.ets",
   "version": "1.0.0",

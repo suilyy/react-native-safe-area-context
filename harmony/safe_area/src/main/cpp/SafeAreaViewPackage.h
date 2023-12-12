@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (C) 2023 Huawei Device Co., Ltd.
+ * Copyright (C) 2021 Huawei Device Co., Ltd.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -13,7 +13,7 @@
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANT KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -35,7 +35,8 @@ using namespace rnoh;
 using namespace facebook;
 class RNCSafeAreaContextFactoryDelegate : public TurboModuleFactoryDelegate {
 public:
-    SharedTurboModule createTurboModule(Context ctx, const std::string &name) const override {
+    SharedTurboModule createTurboModule(Context ctx, const std::string &name) const override
+    {
         if (name == "RNCSafeAreaContext") {
             return std::make_shared<RNCSafeAreaContextTurbomodule>(ctx, name);
         }
@@ -49,29 +50,33 @@ namespace rnoh {
     public:
         SafeAreaViewPackage(Package::Context ctx) : Package(ctx) {}
 
-        std::unique_ptr<TurboModuleFactoryDelegate> createTurboModuleFactoryDelegate() override {
+        std::unique_ptr<TurboModuleFactoryDelegate> createTurboModuleFactoryDelegate() override
+        {
             return std::make_unique<RNCSafeAreaContextFactoryDelegate>();
         }
-
-
-        std::vector<facebook::react::ComponentDescriptorProvider> createComponentDescriptorProviders() override {
+    
+        std::vector<facebook::react::ComponentDescriptorProvider> createComponentDescriptorProviders() override
+        {
             return {facebook::react::concreteComponentDescriptorProvider<
                         facebook::react::RNCSafeAreaProviderComponentDescriptor>(),
                     facebook::react::concreteComponentDescriptorProvider<
                         facebook::react::RNCSafeAreaViewComponentDescriptor>()};
         }
 
-        ComponentJSIBinderByString createComponentJSIBinderByName() override {
+        ComponentJSIBinderByString createComponentJSIBinderByName() override
+        {
             return {{"RNCSafeAreaProvider", std::make_shared<RNCSafeAreaProviderJSIBinder>()},
                     {"RNCSafeAreaView", std::make_shared<RNCSafeAreaViewJSIBinder>()}};
         };
 
-        ComponentNapiBinderByString createComponentNapiBinderByName() override {
+        ComponentNapiBinderByString createComponentNapiBinderByName() override
+        {
             return {{"RNCSafeAreaProvider", std::make_shared<RNCSafeAreaProviderNapiBinder>()},
                     {"RNCSafeAreaView", std::make_shared<RNCSafeAreaViewNapiBinder>()}};
         };
 
-        EventEmitRequestHandlers createEventEmitRequestHandlers() override {
+        EventEmitRequestHandlers createEventEmitRequestHandlers() override
+        {
             return {std::make_shared<SafeAreaEventEmitRequestHandler>()};
         }
     };
