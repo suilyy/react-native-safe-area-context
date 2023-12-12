@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (C) 2023 Huawei Device Co., Ltd.
+ * Copyright (C) 2021 Huawei Device Co., Ltd.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -13,7 +13,7 @@
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANT KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -29,7 +29,8 @@
 namespace rnoh {
     class RNCSafeAreaProviderNapiBinder : public ViewComponentNapiBinder {
     public:
-        napi_value createProps(napi_env env, facebook::react::ShadowView const shadowView) override {
+        napi_value createProps(napi_env env, facebook::react::ShadowView const shadowView) override
+        {
             napi_value napiViewProps = ViewComponentNapiBinder::createProps(env, shadowView);
             if (auto props =
                     std::dynamic_pointer_cast<const facebook::react::RNCSafeAreaProviderProps>(shadowView.props)) {

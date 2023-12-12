@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "safe_area_context",
+    "name": "safe_area",
     "type": "har",
     "deviceTypes": [
       "default",
