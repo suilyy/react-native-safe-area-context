@@ -92,9 +92,12 @@
     "release-it": "^15.10.1",
     "typescript": "^5.0.4"
   },
+  "dependencies": {
+    "react-native-safe-area-context": "4.7.4"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/th3rdwave/react-native-safe-area-context.git"
+    "url": "https://github.com/react-native-oh-library/react-native-safe-area-context.git"
   },
   "jest": {
     "preset": "react-native",
