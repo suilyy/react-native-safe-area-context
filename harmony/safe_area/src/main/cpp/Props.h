@@ -50,7 +50,7 @@ namespace facebook {
         };
 
         std::string toString(const RNCSafeAreaViewMode &value);
-        std::string toString(const RNCSafeAreaViewEdgesStruct &value);
+        folly::dynamic toObject(const RNCSafeAreaViewEdgesStruct &value);
         void fromRawValue(const PropsParserContext &context, const RawValue &value, RNCSafeAreaViewMode &result);
         void fromRawValue(const PropsParserContext &context, const RawValue &value, RNCSafeAreaViewEdgesStruct &result);
 

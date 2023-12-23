@@ -22,69 +22,133 @@
  * SOFTWARE.
  */
 
+import matrix4 from '@ohos.matrix4'
+
 import {
   Descriptor,
   ComponentBuilderContext,
-  RNComponentFactory,
   RNOHContext,
-  RNViewBase,
   ViewBaseProps,
-  Tag
+  Tag,
+  rnComponentFactoryBuilder,
+  ViewRawProps,
+  RNViewManager,
+  ViewDescriptorWrapperBase,
+  TransformMatrix,
+  CompactValue,
+  Edges,
+  Point
 } from 'rnoh'
 
+import { SafeAreaViewModifier } from './SafeAreaViewModifier'
 import { SafeAreaViewTurboModule } from "./SafeViewTurboModule"
-import { ColorSegments } from './descriptor'
-import { convertColorSegmentsToString } from './utils'
-import { convertTransformMatrix } from "./utils"
-import { SafeAreaManager } from './SafeAreaManager';
-import { EdgeInsets, AvoidArea, Event, borderColor, Edges } from './common/SafeAreaType';
+import { EdgeInsets, AvoidArea, Event, EdgesMode } from './common/SafeAreaType';
 import Logger from './Logger'
 
-export const SAFE_AREA_TYPE: string = "RNCSafeAreaView"
+export const SAFE_AREA_VIEW_TYPE: string = "RNCSafeAreaView"
 
+export type DimensionValue = number | 'auto' | `${number}%` | null;
 
-export interface AvoidAreaProps extends ViewBaseProps {
-  edges: string
-  mode: string
-  margin: EdgeInsets
-  padding: EdgeInsets
-  backgroundColor?: ColorSegments
-  borderWidth?: Edge
-  borderColor?: borderColor
-  borderRadius?: number
-  opacity?: number
-  overflow?: number
-
+export interface SafeAreaViewProps extends ViewBaseProps {
+  edges: EdgesMode,
+  mode: string,
+  margin: EdgeInsets,
+  padding: EdgeInsets,
 }
 
+export interface SafeAreaViewState {}
 
-export type SafeAreaDescriptor = Descriptor<"RNCSafeAreaView", AvoidAreaProps>
+export interface SafeAreaViewRawProps extends ViewRawProps {
+  mode: string
+}
 
-const TAG: string = '[RNOH]RNCSafeAreaView'
+export type SafeAreaViewDescriptor = Descriptor<"RNCSafeAreaView", SafeAreaViewProps, SafeAreaViewState, SafeAreaViewRawProps>;
+
+export class SafeAreaViewManager extends RNViewManager {
+  protected offsetX: number = 0;
+  protected offsetY: number = 0;
+
+  constructor(
+    tag: Tag,
+    ctx: RNOHContext,
+    offsetX: number,
+    offsetY: number
+  ) {
+    super(tag, ctx);
+    this.offsetX = offsetX
+    this.offsetY = offsetY
+  }
+
+  setOffsetX(offsetX: number) {
+    this.offsetX = offsetX
+  }
+
+  setOffsetY(offsetY: number) {
+    this.offsetY = offsetY
+  }
+
+  public computeChildPoint(point: Point, childTag: Tag): Point {
+    return super.computeChildPoint({ x: point.x + this.offsetX, y: point.y + this.offsetY }, childTag);
+  }
+}
+
+export class SafeAreaViewDescriptorWrapper extends ViewDescriptorWrapperBase<"RNCSafeAreaView", SafeAreaViewProps, SafeAreaViewState, SafeAreaViewRawProps> {
+  public edgeInsets: EdgeInsets = { top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0 }
+
+  public get mode(): string | undefined {
+    return this.rawProps.mode
+  }
+
+  public SetEdgeInsets(edges: EdgeInsets) {
+    this.edgeInsets = edges
+  }
+
+  public getEdgeInsets() {
+    return this.edgeInsets
+  }
+
+  public get margin(): Edges<CompactValue> {
+    const resolvedEdges = this.resolveEdges({
+      all: this.rawProps.margin,
+      top: this.rawProps.marginTop,
+      left: this.rawProps.marginLeft,
+      right: this.rawProps.marginRight,
+      bottom: this.rawProps.marginBottom,
+      start: this.rawProps.marginStart,
+      end: this.rawProps.marginEnd,
+    })
+
+    return {
+      top: new CompactValue(resolvedEdges.top as DimensionValue, this.height),
+      left: new CompactValue(resolvedEdges.left as DimensionValue, this.width),
+      right: new CompactValue(resolvedEdges.right as DimensionValue, this.width),
+      bottom: new CompactValue(resolvedEdges.bottom as DimensionValue, this.height),
+    }
+  }
+}
 
 @Component
-export struct RNCSafeAreaView {
+export struct SafeAreaView {
   ctx!: RNOHContext
   tag: number = 0
-  @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
+  @BuilderParam public buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
+  private componentManager!: SafeAreaViewManager
+  @State descriptor: SafeAreaViewDescriptor = {} as SafeAreaViewDescriptor
+  @State descriptorWrapper: SafeAreaViewDescriptorWrapper | undefined = undefined
   private unregisterDescriptorChangesListener?: () => void = undefined
-  private cleanupCommandCallback?: () => void = undefined
   private unregisterComponentManager?: () => void = undefined
-  @State descriptor: SafeAreaDescriptor = {} as SafeAreaDescriptor
   @State avoidArea: AvoidArea = {} as AvoidArea
   @State edgeInsets: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 }
-  private componentManager!: SafeAreaManager
 
-  getEdgeValue(edgeMode: string, insetValue: number, edgeValue: number): number {
+  getEdgeValue(edgeMode: string | undefined, insetValue: number, edgeValue: number): number {
     if (edgeMode == 'off') {
       return 0;
     } else if (edgeMode == 'maximum') {
       //insetValue 安全区域    edgeValue原区域
-      if (edgeValue > insetValue) {
-        return edgeValue - insetValue
-      } else {
-        return insetValue - edgeValue
-      }
+      return edgeValue > insetValue ? edgeValue - insetValue : insetValue - edgeValue
     } else {
       return insetValue;
     }
@@ -93,37 +157,22 @@ export struct RNCSafeAreaView {
   updateInsets() {
     const safeAreaViewTurboModule = this.ctx.rnInstance.getTurboModule<SafeAreaViewTurboModule>("RNCSafeAreaContext")
     const safeAreaInsets = safeAreaViewTurboModule.getSafeAreaInsets();
-    let edges: Edges = { top: 'additive', right: 'additive', bottom: 'additive', left: 'additive' };
-    if (this.descriptor.props.edges) {
-      edges = JSON.parse(this.descriptor.props.edges) as Edges
-    }
-
+    let edges: EdgesMode = { top: 'additive', right: 'additive', bottom: 'additive', left: 'additive' };
+    edges = this.descriptor.props.edges
     safeAreaInsets.then((data: Event) => {
-      Logger.info(TAG, JSON.stringify(data))
-      // Logger.info(TAG, Math.abs(data.frame.height - data.insets.top - this.descriptor.layoutMetrics.frame.size.height))
-      // if (Math.abs(data.frame.height - data.insets.top - this.descriptor.layoutMetrics.frame.size.height) < 1) {
-      //   throw "判断已经规避状态栏"
-      // }
       if (data.insets) {
+        let edgesData = this.descriptorWrapper?.mode && this.descriptorWrapper?.mode === 'margin' ? this.descriptor.props.margin : this.descriptor.props.padding
         this.edgeInsets = {
-          top: this.getEdgeValue(edges.top, data.insets.top, (this.descriptor.props.mode == 'margin' ? this.descriptor.props.margin.top : this.descriptor.props.padding.top)),
-          right: this.getEdgeValue(edges.right, data.insets.right, this.descriptor.props.mode == 'margin' ? this.descriptor.props.margin.right : this.descriptor.props.padding.right) | 0,
-          bottom: this.getEdgeValue(edges.bottom, data.insets.bottom, this.descriptor.props.mode == 'margin' ? this.descriptor.props.margin.bottom : this.descriptor.props.padding.bottom) | 0,
-          left: this.getEdgeValue(edges.left, data.insets.left, this.descriptor.props.mode == 'margin' ? this.descriptor.props.margin.left : this.descriptor.props.padding.left) | 0
+          top: this.getEdgeValue(edges.top, data.insets.top, edgesData?.top),
+          right: this.getEdgeValue(edges.right, data.insets.right, edgesData?.right),
+          bottom: this.getEdgeValue(edges.bottom, data.insets.bottom, edgesData?.bottom),
+          left: this.getEdgeValue(edges.left, data.insets.left, edgesData?.left)
         }
       }
-
-      // this.edgeInsets = {
-      //   top: this.getEdgeValue(edges.top, data.insets.top, (this.descriptor.props.mode == 'margin' ? this.descriptor.props.margin.top : this.descriptor.props.padding.top)),
-      //   right: this.getEdgeValue(edges.right, data.insets.right, this.descriptor.props.mode == 'margin' ? this.descriptor.props.margin.right : this.descriptor.props.padding.right) | 0,
-      //   bottom: this.getEdgeValue(edges.bottom, data.insets.bottom, this.descriptor.props.mode == 'margin' ? this.descriptor.props.margin.bottom : this.descriptor.props.padding.bottom) | 0,
-      //   left: this.getEdgeValue(edges.left, data.insets.left, this.descriptor.props.mode == 'margin' ? this.descriptor.props.margin.left : this.descriptor.props.padding.left) | 0
-      // }
-      // Logger.info(TAG, "edgeInsets " + JSON.stringify(this.edgeInsets))
-
+      Logger.info("edgeInsets " + JSON.stringify(this.edgeInsets))
     })
       .catch((e: string | Error) => {
-        Logger.error(TAG, JSON.stringify(e));
+        Logger.error('updateInsets error', JSON.stringify(e));
         this.edgeInsets = {
           top: 0,
           right: 0,
@@ -132,28 +181,30 @@ export struct RNCSafeAreaView {
         }
       })
       .finally(() => {
+        if (this.descriptorWrapper) {
+          this.descriptorWrapper.SetEdgeInsets(this.edgeInsets)
+        }
         let offsetY = this.edgeInsets.bottom - this.edgeInsets.top
         let offsetX = this.edgeInsets.right - this.edgeInsets.left
         this.componentManager.setOffsetY(offsetY)
         this.componentManager.setOffsetX(offsetX)
-        this.componentManager.updateBoundingBox()
+        this.componentManager.markBoundingBoxAsDirty()
       })
   }
 
   aboutToAppear() {
-    this.descriptor = this.ctx.descriptorRegistry.getDescriptor<SafeAreaDescriptor>(this.tag)
-    Logger.info(TAG, JSON.stringify(this.descriptor))
+    this.descriptor = this.ctx.descriptorRegistry.getDescriptor<SafeAreaViewDescriptor>(this.tag)
+    if (this.descriptor) {
+      this.setDescriptor(this.descriptor)
+    }
+    this.updateInsets()
     this.unregisterDescriptorChangesListener = this.ctx.descriptorRegistry.subscribeToDescriptorChanges(this.tag,
       (newDescriptor) => {
-        Logger.info(TAG, JSON.stringify(newDescriptor))
-        this.descriptor = (newDescriptor as SafeAreaDescriptor)
+        this.setDescriptor(newDescriptor as SafeAreaViewDescriptor)
         this.updateInsets()
-        Logger.info(TAG, 'updateInsets' + JSON.stringify(this.edgeInsets))
       }
     )
-    this.componentManager = new SafeAreaManager(this.tag, this.ctx, 0, 0)
-    this.unregisterComponentManager = this.ctx.componentManagerRegistry.registerComponentManager(this.tag, this.componentManager)
-    this.updateInsets()
+    this.initComponent()
   }
 
   aboutToDisappear() {
@@ -161,38 +212,29 @@ export struct RNCSafeAreaView {
     this.unregisterComponentManager?.()
   }
 
-  build() {
-    Column() {
-      Stack() {
-        RNViewBase({ ctx: this.ctx, tag: this.tag, componentManager: this.componentManager }) {
-          ForEach(this.descriptor.childrenTags, (tag: Tag) => {
-            RNComponentFactory({
-              ctx: this.ctx,
-              tag: tag,
-              buildCustomComponent: this.buildCustomComponent })
-          }, (tag: Tag) => tag.toString())
-        }
-      }
-      .width(this.descriptor.layoutMetrics.frame.size.width)
-      .height(this.descriptor.layoutMetrics.frame.size.height)
-      .backgroundColor(convertColorSegmentsToString(this.descriptor.props.backgroundColor))
-      .borderWidth(this.descriptor.props.borderWidth)
-      // .borderColor({
-      //   left: convertColorSegmentsToString(this.descriptor.props.borderColor.left ? this.descriptor.props.borderColor.left : [0, 0, 0, 0]),
-      //   top: convertColorSegmentsToString(this.descriptor.props.borderColor.top ? this.descriptor.props.borderColor.top : [0, 0, 0, 0]),
-      //   right: convertColorSegmentsToString(this.descriptor.props.borderColor.right ? this.descriptor.props.borderColor.right : [0, 0, 0, 0]),
-      //   bottom: convertColorSegmentsToString(this.descriptor.props.borderColor.bottom ? this.descriptor.props.borderColor.bottom : [0, 0, 0, 0]),
-      // })
-      .borderRadius(this.descriptor.props.borderRadius)
-      .opacity(this.descriptor.props.opacity)
-      .transform(this.descriptor.props.transform != undefined ? convertTransformMatrix(this.descriptor.props.transform) : undefined)
-      .clip(this.descriptor.props.overflow == 1 ? true : false)
-      .margin(this.descriptor.props.mode == 'margin' ? this.edgeInsets : 0)
-      .padding(this.descriptor.props.mode == 'margin' ? 0 : this.edgeInsets)
+  initComponent() {
+    if (!this.componentManager) {
+      this.componentManager = new SafeAreaViewManager(this.tag, this.ctx, 0, 0)
     }
-    .align(Alignment.TopStart)
-    .position({ y: this.descriptor.layoutMetrics.frame.origin.y, x: this.descriptor.layoutMetrics.frame.origin.x })
-    .width('100%')
-    .height('100%')
+    this.unregisterComponentManager = this.ctx.componentManagerRegistry.registerComponentManager(this.tag, this.componentManager)
+    const parentTag = this.descriptor.parentTag;
+    this.componentManager.setParentTag(parentTag);
+  }
+
+  private setDescriptor(descriptor: SafeAreaViewDescriptor) {
+    this.descriptorWrapper = new SafeAreaViewDescriptorWrapper(descriptor)
+    this.descriptor = descriptor
+    Logger.info('descriptorWrapper' + JSON.stringify(this.descriptorWrapper))
+  }
+
+  build() {
+    Stack() {
+      ForEach(this.descriptorWrapper?.childrenTags, (childrenTag: Tag) => {
+        rnComponentFactoryBuilder(this.ctx,
+          childrenTag,
+          this.ctx.rnInstance.getComponentNameFromDescriptorType(this.ctx.descriptorRegistry.getDescriptor(childrenTag)?.type))
+      }, (tag: Tag) => tag.toString())
+    }
+    .attributeModifier(SafeAreaViewModifier.getInstance().setDescriptor(this.descriptorWrapper))
   }
 }

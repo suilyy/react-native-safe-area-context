@@ -38,7 +38,7 @@ namespace rnoh {
                 return ArkJS(env)
                     .getObjectBuilder(napiViewProps)
                     .addProperty("mode", facebook::react::toString(props->mode))
-                    .addProperty("edges", facebook::react::toString(props->edges))
+                    .addProperty("edges", facebook::react::toObject(props->edges))
                     .addProperty("padding", getParagraphPaddingProps(shadowView))
                     .addProperty("margin", getParagraphMarginProps(shadowView))
                     .build();

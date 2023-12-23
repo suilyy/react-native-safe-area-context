@@ -25,30 +25,43 @@
 import {
   Descriptor,
   ComponentBuilderContext,
-  RNComponentFactory,
+  rnComponentFactoryBuilder,
   RNOHContext,
-  RNViewBase,
   ViewRawProps,
+  ViewBaseProps,
+  ViewDescriptorWrapperBase,
+  RNViewManager,
+  ViewBaseDescriptor
 } from 'rnoh'
 
 import { SafeAreaViewTurboModule } from "./SafeViewTurboModule"
-import { EdgeInsets, Frame, Event, Tag } from './common/SafeAreaType';
+import { Event, Tag } from './common/SafeAreaType';
 import Logger from './Logger'
+import { SafeAreaProviderModifier } from './SafeAreaProviderModifier'
 
 export const SAFE_AREA_PROVIDER_TYPE: string = "RNCSafeAreaProvider"
 
+export interface SafeAreaProviderProps extends ViewBaseProps {}
 
-export type RNCSafeAreaProviderDescriptor = Descriptor<"RNCSafeAreaProvider", ViewRawProps>
+export interface SafeAreaProviderState {}
+
+export interface SafeAreaProviderRawProps extends ViewRawProps {}
+
+export type SafeAreaProviderDescriptor = Descriptor<"RNCSafeAreaProvider", SafeAreaProviderProps, SafeAreaProviderState, SafeAreaProviderRawProps>
+
+export class SafeAreaProviderDescriptorWrapper extends ViewDescriptorWrapperBase<"RNCSafeAreaProvider", SafeAreaProviderProps, SafeAreaProviderState, SafeAreaProviderRawProps> {
+}
 
 @Component
 export struct SafeAreaProvider {
   ctx!: RNOHContext
   tag: number = 0
-  // @State private childrenTags: Tag[] = []
   @BuilderParam buildCustomComponent: (componentBuilderContext: ComponentBuilderContext) => void
+  private componentManager!: RNViewManager
+  @State descriptor: SafeAreaProviderDescriptor = {} as SafeAreaProviderDescriptor
+  @State descriptorWrapper: SafeAreaProviderDescriptorWrapper | undefined = undefined
   private unregisterDescriptorChangesListener?: () => void = undefined
-  private cleanupCommandCallback?: () => void = undefined
-  @State descriptor: RNCSafeAreaProviderDescriptor = {} as RNCSafeAreaProviderDescriptor
+  private unregisterComponentManager?: () => void = undefined
 
   onInsetsChange() {
     const safeAreaViewTurboModule = this.ctx.rnInstance.getTurboModule<SafeAreaViewTurboModule>("RNCSafeAreaContext")
@@ -68,29 +81,46 @@ export struct SafeAreaProvider {
   }
 
   aboutToAppear() {
-    this.descriptor = this.ctx.descriptorRegistry.getDescriptor<RNCSafeAreaProviderDescriptor>(this.tag)
-    Logger.info(JSON.stringify(this.descriptor))
+    this.descriptor = this.ctx.descriptorRegistry.getDescriptor<SafeAreaProviderDescriptor>(this.tag)
+    if (this.descriptor) {
+      this.setDescriptor(this.descriptor)
+    }
     this.unregisterDescriptorChangesListener = this.ctx.descriptorRegistry.subscribeToDescriptorChanges(this.tag,
       (newDescriptor) => {
-        Logger.info(JSON.stringify(newDescriptor))
-        this.descriptor = (newDescriptor as RNCSafeAreaProviderDescriptor)
+        this.setDescriptor(newDescriptor as SafeAreaProviderDescriptor)
       }
     )
+    this.initComponent();
     this.onInsetsChange()
   }
 
   aboutToDisappear() {
     this.unregisterDescriptorChangesListener?.()
+    this.unregisterComponentManager?.()
+  }
+
+  initComponent() {
+    if (!this.componentManager) {
+      this.componentManager = new RNViewManager(this.tag, this.ctx)
+    }
+    this.unregisterComponentManager = this.ctx.componentManagerRegistry.registerComponentManager(this.tag, this.componentManager)
+    const parentTag = this.descriptor.parentTag;
+    this.componentManager.setParentTag(parentTag);
+  }
+
+  private setDescriptor(descriptor: SafeAreaProviderDescriptor) {
+    this.descriptorWrapper = new SafeAreaProviderDescriptorWrapper(descriptor)
+    Logger.info('descriptorWrapper' + JSON.stringify(this.descriptorWrapper))
   }
 
   build() {
-    RNViewBase({
-      ctx: this.ctx,
-      tag: this.tag
-    }) {
-      ForEach(this.descriptor.childrenTags, (childrenTag: Tag) => {
-        RNComponentFactory({ ctx: this.ctx, tag: childrenTag, buildCustomComponent: this.buildCustomComponent })
-      }, (childrenTag: Tag) => childrenTag.toString())
+    Stack() {
+      ForEach(this.descriptorWrapper?.childrenTags, (childrenTag: Tag) => {
+        rnComponentFactoryBuilder(this.ctx,
+          childrenTag,
+          this.ctx.rnInstance.getComponentNameFromDescriptorType(this.ctx.descriptorRegistry.getDescriptor(childrenTag)?.type))
+      }, (tag: Tag) => tag.toString())
     }
+    .attributeModifier(SafeAreaProviderModifier.getInstance().setDescriptor(this.descriptorWrapper))
   }
 }

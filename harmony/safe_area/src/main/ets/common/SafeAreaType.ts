@@ -22,13 +22,11 @@
  * SOFTWARE.
  */
 
-import { ColorSegments } from '../descriptor'
-
-export type Edge = {
-  top?: number
-  right?: number
-  bottom?: number
-  left?: number
+export type EdgesMode = {
+  top?: string
+  right?: string
+  bottom?: string
+  left?: string
 }
 
 export type EdgeInsets = {
@@ -36,20 +34,6 @@ export type EdgeInsets = {
   right: number
   bottom: number
   left: number
-}
-
-export type Edges = {
-  top: string
-  right: string
-  bottom: string
-  left: string
-}
-
-export type borderColor = {
-  top?: ColorSegments
-  right?: ColorSegments
-  bottom?: ColorSegments
-  left?: ColorSegments
 }
 
 export type Frame = {

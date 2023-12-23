@@ -44,11 +44,9 @@ namespace facebook {
 
         {}
 
-        std::string toString(const RNCSafeAreaViewEdgesStruct &value)
+        folly::dynamic toObject(const RNCSafeAreaViewEdgesStruct &value)
         {
-            std::string result = "{\"top\":\"" + value.top + "\",\"right\":\"" + value.right + "\",\"bottom\":\"" +
-                                 value.bottom + "\",\"left\":\"" + value.left + "\"}";
-            return result;
+            return folly::dynamic::object("top", value.top)("right", value.right)("bottom", value.bottom)("left", value.left);
         }
 
         std::string toString(const RNCSafeAreaViewMode &value)
