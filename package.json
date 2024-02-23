@@ -1,6 +1,6 @@
 {
   "name": "@react-native-oh-tpl/react-native-safe-area-context",
-  "version": "4.7.4-0.0.6",
+  "version": "4.7.4-0.0.7",
   "description": "A flexible way to handle safe area, also works on Android and web.",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
@@ -18,9 +18,6 @@
   "files": [
     "src",
     "lib",
-    "android",
-    "ios",
-    "common",
     "jest",
     "*.podspec",
     "react-native.config.js",
@@ -137,13 +134,5 @@
       "module",
       "typescript"
     ]
-  },
-  "codegenConfig": {
-    "android": {
-      "javaPackageName": "com.th3rdwave.safeareacontext"
-    },
-    "name": "safeareacontext",
-    "type": "all",
-    "jsSrcsDir": "./src/specs"
   }
 }
