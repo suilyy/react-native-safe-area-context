@@ -25,7 +25,7 @@
 import {
   Descriptor,
   ComponentBuilderContext,
-  rnComponentFactoryBuilder,
+  RNComponentFactory,
   RNOHContext,
   ViewRawProps,
   ViewBaseProps,
@@ -116,9 +116,11 @@ export struct SafeAreaProvider {
   build() {
     Stack() {
       ForEach(this.descriptorWrapper?.childrenTags, (childrenTag: Tag) => {
-        rnComponentFactoryBuilder(this.ctx,
-          childrenTag,
-          this.ctx.rnInstance.getComponentNameFromDescriptorType(this.ctx.descriptorRegistry.getDescriptor(childrenTag)?.type))
+        RNComponentFactory({
+          ctx: this.ctx,
+          tag: childrenTag,
+          buildCustomComponent: this.buildCustomComponent
+        })
       }, (tag: Tag) => tag.toString())
     }
     .attributeModifier(SafeAreaProviderModifier.getInstance().setDescriptor(this.descriptorWrapper))
