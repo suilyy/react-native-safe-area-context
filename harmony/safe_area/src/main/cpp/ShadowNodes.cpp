@@ -22,15 +22,12 @@
  * SOFTWARE.
  */
 
-#pragma once
-#include <react/renderer/core/ConcreteComponentDescriptor.h>
 #include "ShadowNodes.h"
 
-namespace facebook {
-    namespace react {
+namespace facebook{
+  namespace react{
+      extern const char RNCSafeAreaProviderComponentName[] = "RNCSafeAreaProvider";
+      extern const char RNCSafeAreaViewComponentName[] = "RNCSafeAreaView";
 
-        using RNCSafeAreaProviderComponentDescriptor = ConcreteComponentDescriptor<RNCSafeAreaProviderShadowNode>;
-
-        using RNCSafeAreaViewComponentDescriptor = ConcreteComponentDescriptor<RNCSafeAreaViewShadowNode>;
-    } // namespace react
+  } // namespace react
 } // namespace facebook

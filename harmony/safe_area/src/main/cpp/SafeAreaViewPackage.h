@@ -30,9 +30,26 @@
 #include "RNCSafeAreaViewNapiBinder.h"
 #include "RNCSafeAreaProviderNapiBinder.h"
 #include "SafeAreaEventEmitRequestHandler.h"
+#include "SafeAreaProviderComponentInstance.h"
+#include "SafeAreaViewComponentInstance.h"
 
 using namespace rnoh;
 using namespace facebook;
+
+class SafeAreaPackageComponentInstanceFactoryDelegate : public ComponentInstanceFactoryDelegate {
+public:
+    using ComponentInstanceFactoryDelegate::ComponentInstanceFactoryDelegate;
+
+    ComponentInstance::Shared create(ComponentInstanceFactoryContext ctx) override {
+        if (ctx.componentName == "RNCSafeAreaProvider") {
+            return std::make_shared<SafeAreaProviderComponentInstance>(m_ctx, ctx.tag);
+        } else if (ctx.componentName == "RNCSafeAreaView") {
+            return std::make_shared<SafeAreaViewComponentInstance>(m_ctx, ctx.tag);
+        }
+        return nullptr;
+    }
+};
+
 class RNCSafeAreaContextFactoryDelegate : public TurboModuleFactoryDelegate {
 public:
     SharedTurboModule createTurboModule(Context ctx, const std::string &name) const override
@@ -49,6 +66,10 @@ namespace rnoh {
     class SafeAreaViewPackage : public Package {
     public:
         SafeAreaViewPackage(Package::Context ctx) : Package(ctx) {}
+
+        ComponentInstanceFactoryDelegate::Shared createComponentInstanceFactoryDelegate() override {
+            return std::make_shared<SafeAreaPackageComponentInstanceFactoryDelegate>(m_ctx);
+        }
 
         std::unique_ptr<TurboModuleFactoryDelegate> createTurboModuleFactoryDelegate() override
         {

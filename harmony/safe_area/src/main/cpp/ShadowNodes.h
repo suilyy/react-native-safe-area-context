@@ -22,24 +22,33 @@
  * SOFTWARE.
  */
 
-#pragma once
-#ifdef ANDROID
-#include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
-#endif
+#ifndef HARMONY_SAFEAREA_SRC_MAIN_CPP_SHADOWNODES_H
+#define HARMONY_SAFEAREA_SRC_MAIN_CPP_SHADOWNODES_H
 
-namespace facebook {
-    namespace react {
-        class RNCState {
-        public:
-            RNCState() = default;
+#include "Props.h"
+#include "RNCSafeAreaProviderEventEmitters.h"
+#include <jsi/jsi.h>
+#include <react/renderer/components/view/ConcreteViewShadowNode.h>
+#include <react/renderer/components/view/ViewShadowNode.h>
 
-#ifdef ANDROID
-            RNCSafeAreaProviderState(RNCSafeAreaProviderState const &previousState, folly::dynamic data){};
-            folly::dynamic getDynamic() const { return {}; };
-            MapBuffer getMapBuffer() const { return MapBufferBuilder::EMPTY(); };
-#endif
-        };
-    } // namespace react
+namespace facebook{
+  namespace react{
+
+    JSI_EXPORT extern const char RNCSafeAreaProviderComponentName[];
+    JSI_EXPORT extern const char RNCSafeAreaViewComponentName[];
+
+    /*
+     * `ShadowNode` for <RNCSafeAreaProvider> component.
+     */
+    using RNCSafeAreaProviderShadowNode =
+        ConcreteViewShadowNode<RNCSafeAreaProviderComponentName, RNCSafeAreaProviderProps, RNCSafeAreaProviderEventEmitter>;
+
+    /*
+     * `ShadowNode` for <RNCSafeAreaView> component.
+     */
+    using RNCSafeAreaViewShadowNode = ConcreteViewShadowNode<RNCSafeAreaViewComponentName, RNCSafeAreaViewProps,
+                                                             RNCSafeAreaViewEventEmitter>;
+
+  } // namespace react
 } // namespace facebook
+#endif
