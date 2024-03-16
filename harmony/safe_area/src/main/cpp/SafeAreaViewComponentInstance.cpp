@@ -1,10 +1,36 @@
+/**
+ * MIT License
+ *
+ * Copyright (C) 2023 Huawei Device Co., Ltd.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #include "SafeAreaViewComponentInstance.h"
 #include "Props.h"
+#include "TurboModuleRequest.h"
 
 namespace rnoh {
 
-    SafeAreaViewComponentInstance::SafeAreaViewComponentInstance(Context context, facebook::react::Tag tag)
-        : CppComponentInstance(std::move(context), tag) {}
+    SafeAreaViewComponentInstance::SafeAreaViewComponentInstance(Context context)
+        : CppComponentInstance(std::move(context)) {
+        m_context = context;
+    }
 
     void SafeAreaViewComponentInstance::insertChild(ComponentInstance::Shared childComponentInstance,
                                                     std::size_t index) {
@@ -22,35 +48,37 @@ namespace rnoh {
     std::string to_string(facebook::react::RNCSafeAreaViewMode mode) {
         switch (mode) {
         case facebook::react::RNCSafeAreaViewMode::PADDING:
+            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.left: RNCSafeAreaViewMode::PADDING";
             return "PADDING";
         case facebook::react::RNCSafeAreaViewMode::MARGIN:
+            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.left: RNCSafeAreaViewMode::MARGIN";
             return "MARGIN";
         default:
             return "UNKNOWN";
         }
     }
 
-    void SafeAreaViewComponentInstance::updateInsert(facebook::react::Props::Shared props){
-    if (auto p = std::dynamic_pointer_cast<const facebook::react::RNCSafeAreaViewProps>(props)) {
-            Edge edges = { "additive", "additive", "additive", "additive"};
+    void SafeAreaViewComponentInstance::updateInsert(facebook::react::Props::Shared props) {
+        if (auto p = std::dynamic_pointer_cast<const facebook::react::RNCSafeAreaViewProps>(props)) {
+            safeArea::Edge edges = {"additive", "additive", "additive", "additive"};
             edges = {p->edges.top, p->edges.right, p->edges.bottom, p->edges.left};
-            //todo rn框架目前获取getTurboModule还没有，假设有，先写后面的逻辑
-            //todo 假设现在有通过getTurboModule获取的data
-            Event data = {{30, 0, 0, 0}, {0, 0, 0, 0}};
-            EdgeInsets edgesData;
-            //todo marginInsets,paddingInsets应该是需要获取的，在capi中还不知道如何获取
-            EdgeInsets marginInsets = {10, 0, 0, 0};
-            EdgeInsets paddingInsets = {0, 0, 0 ,0};
+            TurboModuleRequest request;
+            safeArea::Event data = request.getTurboModuleData(this->m_context);
+            safeArea::EdgeInsets edgesData;
+            float_t rawPadding = p->rawProps["padding"].asInt();
+            float_t rawMargin = p->rawProps["margin"].asInt();
+            safeArea::EdgeInsets marginInsets = {rawMargin, rawMargin, rawMargin, rawMargin};
+            safeArea::EdgeInsets paddingInsets = {rawPadding, rawPadding, rawPadding, rawPadding};
             if (std::strcmp(to_string(p->mode).c_str(), "MARGIN") == 0) {
                 edgesData = marginInsets;
             } else {
                 edgesData = paddingInsets;
             }
-            EdgeInsets insets = {(float)getEdgeValue(edges.top, data.insets.top, edgesData.top),
-                                 (float)getEdgeValue(edges.right, data.insets.right, edgesData.right),
-                                 (float)getEdgeValue(edges.bottom, data.insets.bottom, edgesData.bottom),
-                                 (float)getEdgeValue(edges.left, data.insets.left, edgesData.left)};
-            EdgeInsets zeroEdgeInsets = {0, 0, 0, 0};
+            safeArea::EdgeInsets insets = {getEdgeValue(edges.top, data.insets.top, edgesData.top),
+                                           getEdgeValue(edges.right, data.insets.right, edgesData.right),
+                                           getEdgeValue(edges.bottom, data.insets.bottom, edgesData.bottom),
+                                           getEdgeValue(edges.left, data.insets.left, edgesData.left)};
+            safeArea::EdgeInsets zeroEdgeInsets = {0, 0, 0, 0};
             if (std::strcmp(to_string(p->mode).c_str(), "MARGIN") == 0) {
                 this->getLocalRootArkUINode().contentSetMargin(insets);
                 this->getLocalRootArkUINode().contentSetPadding(zeroEdgeInsets);
@@ -61,16 +89,17 @@ namespace rnoh {
         }
     };
 
-    std::size_t SafeAreaViewComponentInstance::getEdgeValue(std::string edgeMode, std::size_t insetValue, std::size_t edgeValue){
+    std::double_t SafeAreaViewComponentInstance::getEdgeValue(std::string edgeMode, double_t insetValue,
+                                                              double_t edgeValue) {
         if (std::strcmp(edgeMode.c_str(), "off") == 0) {
             return 0;
         } else if (std::strcmp(edgeMode.c_str(), "maximum") == 0) {
-             //insetValue 安全区域    edgeValue原区域
-              if (edgeValue > insetValue) {
+            // insetValue 安全区域    edgeValue原区域
+            if (edgeValue > insetValue) {
                 return edgeValue - insetValue;
-              } else {
+            } else {
                 return insetValue - edgeValue;
-              }
+            }
         } else {
             return insetValue;
         }
@@ -84,6 +113,8 @@ namespace rnoh {
             LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.top: " << p->edges.top;
             LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.bottom: " << p->edges.bottom;
             LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> mode: " << to_string(p->mode);
+            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> padding: " << p->rawProps["padding"].asInt();
+            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> padding: " << p->rawProps["margin"].asInt();
             updateInsert(props);
         }
     }

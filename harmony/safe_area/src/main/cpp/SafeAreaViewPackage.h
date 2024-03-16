@@ -40,11 +40,13 @@ class SafeAreaPackageComponentInstanceFactoryDelegate : public ComponentInstance
 public:
     using ComponentInstanceFactoryDelegate::ComponentInstanceFactoryDelegate;
 
-    ComponentInstance::Shared create(ComponentInstanceFactoryContext ctx) override {
+    ComponentInstance::Shared create(ComponentInstance::Context ctx) override {
         if (ctx.componentName == "RNCSafeAreaProvider") {
-            return std::make_shared<SafeAreaProviderComponentInstance>(m_ctx, ctx.tag);
+            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.left: cbdtest1";
+            return std::make_shared<SafeAreaProviderComponentInstance>(ctx);
         } else if (ctx.componentName == "RNCSafeAreaView") {
-            return std::make_shared<SafeAreaViewComponentInstance>(m_ctx, ctx.tag);
+            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.left: cbdtest12";
+            return std::make_shared<SafeAreaViewComponentInstance>(ctx);
         }
         return nullptr;
     }
@@ -68,7 +70,7 @@ namespace rnoh {
         SafeAreaViewPackage(Package::Context ctx) : Package(ctx) {}
 
         ComponentInstanceFactoryDelegate::Shared createComponentInstanceFactoryDelegate() override {
-            return std::make_shared<SafeAreaPackageComponentInstanceFactoryDelegate>(m_ctx);
+            return std::make_shared<SafeAreaPackageComponentInstanceFactoryDelegate>();
         }
 
         std::unique_ptr<TurboModuleFactoryDelegate> createTurboModuleFactoryDelegate() override

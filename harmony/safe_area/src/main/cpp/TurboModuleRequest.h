@@ -21,27 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
-#include <react/renderer/components/view/ViewEventEmitter.h>
-#include "RNCSafeAreaProviderEventEmitters.h"
+#ifndef HARMONY_TURBOMODULEREQUEST_H
+#define HARMONY_TURBOMODULEREQUEST_H
 #include "RNOH/CppComponentInstance.h"
-#include "RNOH/arkui/StackNode.h"
+#include "SafeAreaBeanData.h"
+class TurboModuleRequest {
+public:
+    safeArea::Event getTurboModuleData(rnoh::CppComponentInstance::Context instance);
+};
 
-namespace rnoh {
-    class SafeAreaProviderComponentInstance : public CppComponentInstance {
-    private:
-        StackNode m_stackNode;
-        Context m_context;
-        std::shared_ptr<const facebook::react::RNCSafeAreaProviderEventEmitter> m_eventEmitter;
-    public:
-        SafeAreaProviderComponentInstance(Context context);
-
-        void insertChild(ComponentInstance::Shared childComponentInstance, std::size_t index) override;
-
-        void removeChild(ComponentInstance::Shared childComponentInstance) override;
-
-        StackNode &getLocalRootArkUINode() override;
-    
-        void setEventEmitter(facebook::react::SharedEventEmitter eventEmitter) override;
-    };
-} // namespace rnoh
+#endif // HARMONY_TURBOMODULEREQUEST_H

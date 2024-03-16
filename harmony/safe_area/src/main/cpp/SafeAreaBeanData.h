@@ -21,27 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
-#include <react/renderer/components/view/ViewEventEmitter.h>
-#include "RNCSafeAreaProviderEventEmitters.h"
-#include "RNOH/CppComponentInstance.h"
-#include "RNOH/arkui/StackNode.h"
 
-namespace rnoh {
-    class SafeAreaProviderComponentInstance : public CppComponentInstance {
-    private:
-        StackNode m_stackNode;
-        Context m_context;
-        std::shared_ptr<const facebook::react::RNCSafeAreaProviderEventEmitter> m_eventEmitter;
-    public:
-        SafeAreaProviderComponentInstance(Context context);
-
-        void insertChild(ComponentInstance::Shared childComponentInstance, std::size_t index) override;
-
-        void removeChild(ComponentInstance::Shared childComponentInstance) override;
-
-        StackNode &getLocalRootArkUINode() override;
-    
-        void setEventEmitter(facebook::react::SharedEventEmitter eventEmitter) override;
+#ifndef HARMONY_SAFEAREABEANDATA_H
+#define HARMONY_SAFEAREABEANDATA_H
+#include <string>
+namespace safeArea {
+    struct EdgeInsets {
+        double_t top;
+        double_t right;
+        double_t bottom;
+        double_t left;
     };
-} // namespace rnoh
+
+    struct Edge {
+        std::string top;
+        std::string right;
+        std::string bottom;
+        std::string left;
+    };
+
+    struct Frame {
+        double_t x;
+        double_t y;
+        double_t width;
+        double_t height;
+    };
+
+    struct Event {
+        EdgeInsets insets;
+        Frame frame;
+    };
+} // namespace safeArea
+
+#endif // HARMONY_SAFEAREABEANDATA_H
