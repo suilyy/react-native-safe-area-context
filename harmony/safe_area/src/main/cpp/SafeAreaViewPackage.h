@@ -42,11 +42,9 @@ public:
 
     ComponentInstance::Shared create(ComponentInstance::Context ctx) override {
         if (ctx.componentName == "RNCSafeAreaProvider") {
-            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.left: cbdtest1";
-            return std::make_shared<SafeAreaProviderComponentInstance>(ctx);
+            return std::make_shared<SafeAreaProviderComponentInstance>(std::move(ctx));
         } else if (ctx.componentName == "RNCSafeAreaView") {
-            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.left: cbdtest12";
-            return std::make_shared<SafeAreaViewComponentInstance>(ctx);
+            return std::make_shared<SafeAreaViewComponentInstance>(std::move(ctx));
         }
         return nullptr;
     }
@@ -70,7 +68,7 @@ namespace rnoh {
         SafeAreaViewPackage(Package::Context ctx) : Package(ctx) {}
 
         ComponentInstanceFactoryDelegate::Shared createComponentInstanceFactoryDelegate() override {
-            return std::make_shared<SafeAreaPackageComponentInstanceFactoryDelegate>();
+            return std::make_shared<SafeAreaPackageComponentInstanceFactoryDelegate>(m_ctx);
         }
 
         std::unique_ptr<TurboModuleFactoryDelegate> createTurboModuleFactoryDelegate() override
