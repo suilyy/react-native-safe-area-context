@@ -46,7 +46,7 @@ namespace rnoh {
 
     void SafeAreaViewStackNode::insertChild(ArkUINode &child, std::size_t index) {
         if (m_stackArkUINodeHandle != nullptr) {
-            maybeThrow(NativeNodeApi::getInstance()->addChild(m_stackArkUINodeHandle, child.getArkUINodeHandle()));
+            maybeThrow(NativeNodeApi::getInstance()->insertChildAt(m_stackArkUINodeHandle, child.getArkUINodeHandle(), index));
         }
     }
 
