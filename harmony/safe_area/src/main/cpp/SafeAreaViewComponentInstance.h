@@ -24,24 +24,24 @@
 #pragma once
 #include "RNOH/CppComponentInstance.h"
 #include "SafeAreaViewStackNode.h"
+#include "ShadowNodes.h"
 
 namespace rnoh {
-    class SafeAreaViewComponentInstance : public CppComponentInstance {
+    class SafeAreaViewComponentInstance : public CppComponentInstance<facebook::react::RNCSafeAreaViewShadowNode> {
     private:
         SafeAreaViewStackNode m_stackNode;
-        Context m_context;
     public:
         SafeAreaViewComponentInstance(Context context);
 
-        void insertChild(ComponentInstance::Shared childComponentInstance, std::size_t index) override;
+        void onChildInserted(ComponentInstance::Shared const &childComponentInstance, std::size_t index) override;
 
-        void removeChild(ComponentInstance::Shared childComponentInstance) override;
+        void onChildRemoved(ComponentInstance::Shared const &childComponentInstance) override;
 
-        void setProps(facebook::react::Props::Shared props) override;
+        void onPropsChanged(SharedConcreteProps const &props) override;
 
         SafeAreaViewStackNode &getLocalRootArkUINode() override;
 
-        void updateInsert(facebook::react::Props::Shared props);
+        void updateInsert(SharedConcreteProps p);
 
         std::double_t getEdgeValue(std::string edgeMode, double_t insetValue, double_t edgeValue);
     };

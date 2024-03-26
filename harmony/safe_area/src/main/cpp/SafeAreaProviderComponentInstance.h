@@ -26,22 +26,23 @@
 #include "RNCSafeAreaProviderEventEmitters.h"
 #include "RNOH/CppComponentInstance.h"
 #include "RNOH/arkui/StackNode.h"
+#include "ShadowNodes.h"
 
 namespace rnoh {
-    class SafeAreaProviderComponentInstance : public CppComponentInstance {
+    class SafeAreaProviderComponentInstance : public CppComponentInstance<facebook::react::RNCSafeAreaProviderShadowNode> {
     private:
         StackNode m_stackNode;
-        Context m_context;
-        std::shared_ptr<const facebook::react::RNCSafeAreaProviderEventEmitter> m_eventEmitter;
     public:
         SafeAreaProviderComponentInstance(Context context);
 
-        void insertChild(ComponentInstance::Shared childComponentInstance, std::size_t index) override;
+        void onChildInserted(ComponentInstance::Shared const &childComponentInstance, std::size_t index) override;
 
-        void removeChild(ComponentInstance::Shared childComponentInstance) override;
+        void onChildRemoved(ComponentInstance::Shared const &childComponentInstance) override;
 
         StackNode &getLocalRootArkUINode() override;
     
-        void setEventEmitter(facebook::react::SharedEventEmitter eventEmitter) override;
+        void onPropsChanged(SharedConcreteProps const &props) override;
+
+        void onEventEmitterChanged(SharedConcreteEventEmitter const &eventEmitter) override;
     };
 } // namespace rnoh

@@ -68,7 +68,7 @@ namespace rnoh {
         SafeAreaViewPackage(Package::Context ctx) : Package(ctx) {}
 
         ComponentInstanceFactoryDelegate::Shared createComponentInstanceFactoryDelegate() override {
-            return std::make_shared<SafeAreaPackageComponentInstanceFactoryDelegate>(m_ctx);
+            return std::make_shared<SafeAreaPackageComponentInstanceFactoryDelegate>();
         }
 
         std::unique_ptr<TurboModuleFactoryDelegate> createTurboModuleFactoryDelegate() override

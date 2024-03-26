@@ -26,33 +26,32 @@
 namespace rnoh {
 
     SafeAreaProviderComponentInstance::SafeAreaProviderComponentInstance(Context context)
-        : CppComponentInstance(std::move(context)) {
-        m_context = context;
-    }
+        : CppComponentInstance(std::move(context)) {}
 
-    void SafeAreaProviderComponentInstance::insertChild(ComponentInstance::Shared childComponentInstance,
-                                                        std::size_t index) {
-        CppComponentInstance::insertChild(childComponentInstance, index);
+    void SafeAreaProviderComponentInstance::onChildInserted(ComponentInstance::Shared const &childComponentInstance,
+                                                            std::size_t index) {
+        CppComponentInstance::onChildInserted(childComponentInstance, index);
         m_stackNode.insertChild(childComponentInstance->getLocalRootArkUINode(), index);
     }
 
-    void SafeAreaProviderComponentInstance::removeChild(ComponentInstance::Shared childComponentInstance) {
-        CppComponentInstance::removeChild(childComponentInstance);
+    void SafeAreaProviderComponentInstance::onChildRemoved(ComponentInstance::Shared const &childComponentInstance) {
+        CppComponentInstance::onChildRemoved(childComponentInstance);
         m_stackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
     };
 
     StackNode &SafeAreaProviderComponentInstance::getLocalRootArkUINode() { return m_stackNode; }
 
-    void SafeAreaProviderComponentInstance::setEventEmitter(facebook::react::SharedEventEmitter eventEmitter) {
-        ComponentInstance::setEventEmitter(eventEmitter);
-        auto viewEventEmitter =
-            std::dynamic_pointer_cast<const facebook::react::RNCSafeAreaProviderEventEmitter>(eventEmitter);
-        if (viewEventEmitter == nullptr) {
+    void SafeAreaProviderComponentInstance::onPropsChanged(SharedConcreteProps const &props) {
+        CppComponentInstance::onPropsChanged(props);
+    }
+
+    void SafeAreaProviderComponentInstance::onEventEmitterChanged(SharedConcreteEventEmitter const &eventEmitter) {
+        auto newEventEmitter = std::dynamic_pointer_cast<const ConcreteEventEmitter>(eventEmitter);
+        if (!newEventEmitter) {
             return;
         }
-        m_eventEmitter = viewEventEmitter;
         TurboModuleRequest request;
-        safeArea::Event data = request.getTurboModuleData(this->m_context);
+        safeArea::Event data = request.getTurboModuleData(this->m_deps);
         facebook::react::RNCSafeAreaProviderEventEmitter::OnInsetsChangeInsets insets = {
             data.insets.top, data.insets.right, data.insets.bottom, data.insets.left};
         double x = getLayoutMetrics().frame.origin.x;
@@ -61,7 +60,7 @@ namespace rnoh {
         double height = getLayoutMetrics().frame.size.height;
         facebook::react::RNCSafeAreaProviderEventEmitter::OnInsetsChangeFrame frame = {x, y, width, height};
         facebook::react::RNCSafeAreaProviderEventEmitter::OnInsetsChange insetsChange = {insets, frame};
-        m_eventEmitter->onInsetsChange(insetsChange);
+        newEventEmitter->onInsetsChange(insetsChange);
     }
 
 } // namespace rnoh

@@ -27,7 +27,7 @@
 #include "SafeAreaBeanData.h"
 class TurboModuleRequest {
 public:
-    safeArea::Event getTurboModuleData(rnoh::CppComponentInstance::Context instance);
+    safeArea::Event getTurboModuleData(rnoh::ComponentInstance::Dependencies::Shared deps);
 };
 
 #endif // HARMONY_TURBOMODULEREQUEST_H
