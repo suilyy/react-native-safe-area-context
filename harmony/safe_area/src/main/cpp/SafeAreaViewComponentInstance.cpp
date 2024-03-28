@@ -28,8 +28,7 @@
 namespace rnoh {
 
     SafeAreaViewComponentInstance::SafeAreaViewComponentInstance(Context context)
-        : CppComponentInstance(std::move(context)) {
-    }
+        : CppComponentInstance(std::move(context)) {}
 
     void SafeAreaViewComponentInstance::onChildInserted(ComponentInstance::Shared const &childComponentInstance,
                                                         std::size_t index) {
@@ -63,8 +62,14 @@ namespace rnoh {
         TurboModuleRequest request;
         safeArea::Event data = request.getTurboModuleData(this->m_deps);
         safeArea::EdgeInsets edgesData;
-        float_t rawPadding = p->rawProps["padding"].asInt();
-        float_t rawMargin = p->rawProps["margin"].asInt();
+        float_t rawPadding = 0;
+        float_t rawMargin = 0;
+        if (p->rawProps.get_ptr("padding") != nullptr) {
+            rawPadding = p->rawProps["padding"].asInt();
+        }
+        if (p->rawProps.get_ptr("margin") != nullptr) {
+            rawMargin = p->rawProps["margin"].asInt();
+        }
         safeArea::EdgeInsets marginInsets = {rawMargin, rawMargin, rawMargin, rawMargin};
         safeArea::EdgeInsets paddingInsets = {rawPadding, rawPadding, rawPadding, rawPadding};
         if (std::strcmp(to_string(p->mode).c_str(), "MARGIN") == 0) {
@@ -109,8 +114,14 @@ namespace rnoh {
         LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.top: " << props->edges.top;
         LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.bottom: " << props->edges.bottom;
         LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> mode: " << to_string(props->mode);
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> padding: " << props->rawProps["padding"].asInt();
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> padding: " << props->rawProps["margin"].asInt();
+        if (props->rawProps.get_ptr("padding") != nullptr) {
+            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> padding: "
+                      << props->rawProps["padding"].asInt();
+        }
+        if (props->rawProps.get_ptr("margin") != nullptr) {
+            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> margin: "
+                      << props->rawProps["margin"].asInt();
+        }
         updateInsert(props);
     }
 

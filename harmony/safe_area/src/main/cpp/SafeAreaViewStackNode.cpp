@@ -30,7 +30,6 @@ namespace rnoh {
     SafeAreaViewStackNode::SafeAreaViewStackNode()
         : ArkUINode(NativeNodeApi::getInstance()->createNode(ArkUI_NodeType::ARKUI_NODE_COLUMN)),
           m_stackArkUINodeHandle(nullptr) {
-        maybeThrow(NativeNodeApi::getInstance()->registerNodeEvent(m_nodeHandle, NODE_TOUCH_EVENT, 0));
         ArkUI_NumberValue columnAlignValue[] = {{.i32 = ARKUI_ALIGNMENT_TOP_START}};
         ArkUI_AttributeItem columnAlignItem = {columnAlignValue,
                                                sizeof(columnAlignValue) / sizeof(ArkUI_AttributeItem)};
