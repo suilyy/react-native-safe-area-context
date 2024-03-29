@@ -38,8 +38,7 @@ namespace rnoh {
         ~SafeAreaViewStackNode() override;
         void insertChild(ArkUINode &child, std::size_t index);
         void removeChild(ArkUINode &child);
-        SafeAreaViewStackNode &contentSetMargin(safeArea::EdgeInsets const &);
-        SafeAreaViewStackNode &contentSetPadding(safeArea::EdgeInsets const &);
+        void setMargin(safeArea::EdgeInsets &edgeInsets);
     };
 
 } // namespace rnoh

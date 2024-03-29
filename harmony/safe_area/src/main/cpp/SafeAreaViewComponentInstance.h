@@ -29,7 +29,8 @@
 namespace rnoh {
     class SafeAreaViewComponentInstance : public CppComponentInstance<facebook::react::RNCSafeAreaViewShadowNode> {
     private:
-        SafeAreaViewStackNode m_stackNode;
+        SafeAreaViewStackNode m_safeAreaViewStackNode;
+        StackNode m_stackNode;
     public:
         SafeAreaViewComponentInstance(Context context);
 
@@ -42,6 +43,8 @@ namespace rnoh {
         SafeAreaViewStackNode &getLocalRootArkUINode() override;
 
         void updateInsert(SharedConcreteProps p);
+    
+        void contentSetPadding(safeArea::EdgeInsets edgeInsets);
 
         std::double_t getEdgeValue(std::string edgeMode, double_t insetValue, double_t edgeValue);
     };

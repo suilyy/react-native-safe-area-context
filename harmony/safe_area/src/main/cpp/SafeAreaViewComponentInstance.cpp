@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+#include "RNOH/arkui/NativeNodeApi.h"
 #include "SafeAreaViewComponentInstance.h"
 #include "Props.h"
 #include "TurboModuleRequest.h"
@@ -28,7 +29,9 @@
 namespace rnoh {
 
     SafeAreaViewComponentInstance::SafeAreaViewComponentInstance(Context context)
-        : CppComponentInstance(std::move(context)) {}
+        : CppComponentInstance(std::move(context)) {
+        m_safeAreaViewStackNode.insertChild(m_stackNode, 0);
+    }
 
     void SafeAreaViewComponentInstance::onChildInserted(ComponentInstance::Shared const &childComponentInstance,
                                                         std::size_t index) {
@@ -41,7 +44,7 @@ namespace rnoh {
         m_stackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
     };
 
-    SafeAreaViewStackNode &SafeAreaViewComponentInstance::getLocalRootArkUINode() { return m_stackNode; }
+    SafeAreaViewStackNode &SafeAreaViewComponentInstance::getLocalRootArkUINode() { return m_safeAreaViewStackNode; }
 
     std::string to_string(facebook::react::RNCSafeAreaViewMode mode) {
         switch (mode) {
@@ -83,12 +86,19 @@ namespace rnoh {
                                        getEdgeValue(edges.left, data.insets.left, edgesData.left)};
         safeArea::EdgeInsets zeroEdgeInsets = {0, 0, 0, 0};
         if (std::strcmp(to_string(p->mode).c_str(), "MARGIN") == 0) {
-            this->getLocalRootArkUINode().contentSetMargin(insets);
-            this->getLocalRootArkUINode().contentSetPadding(zeroEdgeInsets);
+            m_safeAreaViewStackNode.setMargin(insets);
+            contentSetPadding(zeroEdgeInsets);
         } else {
-            this->getLocalRootArkUINode().contentSetMargin(zeroEdgeInsets);
-            this->getLocalRootArkUINode().contentSetPadding(insets);
+            m_safeAreaViewStackNode.setMargin(zeroEdgeInsets);
+            contentSetPadding(insets);
         }
+    }
+
+    void SafeAreaViewComponentInstance::contentSetPadding(const safeArea::EdgeInsets edgeInsets) {
+        ArkUI_NumberValue paddingValue[] = {(float)edgeInsets.top, (float)edgeInsets.right, (float)edgeInsets.bottom,
+                                            (float)edgeInsets.left};
+        ArkUI_AttributeItem paddingItem = {paddingValue, sizeof(paddingValue) / sizeof(ArkUI_NumberValue)};
+        NativeNodeApi::getInstance()->setAttribute(m_stackNode.getArkUINodeHandle(), NODE_PADDING, &paddingItem);
     }
 
     std::double_t SafeAreaViewComponentInstance::getEdgeValue(std::string edgeMode, double_t insetValue,
@@ -122,6 +132,24 @@ namespace rnoh {
             LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> margin: "
                       << props->rawProps["margin"].asInt();
         }
+        m_stackNode.setSize(m_layoutMetrics.frame.size);
+        m_stackNode.setBackgroundColor(props->backgroundColor);
+        facebook::react::BorderMetrics borderMetrics = props->resolveBorderMetrics(m_layoutMetrics);
+        m_stackNode.setBorderWidth(borderMetrics.borderWidths);
+        m_stackNode.setBorderRadius(borderMetrics.borderRadii);
+        auto opacity = props->opacity;
+        float validOpacity = std::max(0.0f, std::min((float)opacity, 1.0f));
+        facebook::react::Transform transform = props->transform;
+        if (props->backfaceVisibility == facebook::react::BackfaceVisibility::Hidden) {
+            facebook::react::Vector vec{0, 0, 1, 0};
+            auto resVec = transform * vec;
+            if (resVec.z < 0.0) {
+                validOpacity = 0.0;
+            }
+        }
+        m_stackNode.setOpacity(validOpacity);
+        m_stackNode.setTransform(props->transform, m_layoutMetrics.pointScaleFactor);
+        m_stackNode.setClip(props->getClipsContentToBounds() ? 1 : 0);
         updateInsert(props);
     }
 

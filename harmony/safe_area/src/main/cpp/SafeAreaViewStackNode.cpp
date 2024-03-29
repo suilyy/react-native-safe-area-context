@@ -34,43 +34,26 @@ namespace rnoh {
         ArkUI_AttributeItem columnAlignItem = {columnAlignValue,
                                                sizeof(columnAlignValue) / sizeof(ArkUI_AttributeItem)};
         NativeNodeApi::getInstance()->setAttribute(m_nodeHandle, NODE_ALIGNMENT, &columnAlignItem);
-        m_stackArkUINodeHandle = NativeNodeApi::getInstance()->createNode(ArkUI_NodeType::ARKUI_NODE_STACK);
-
-        ArkUI_NumberValue clipValue[] = {{.i32 = 1}};
-        ArkUI_AttributeItem clipItem = {clipValue, 1};
-        NativeNodeApi::getInstance()->setAttribute(m_stackArkUINodeHandle, NODE_CLIP, &clipItem);
-
-        NativeNodeApi::getInstance()->addChild(m_nodeHandle, m_stackArkUINodeHandle);
     }
 
     void SafeAreaViewStackNode::insertChild(ArkUINode &child, std::size_t index) {
-        if (m_stackArkUINodeHandle != nullptr) {
-            maybeThrow(NativeNodeApi::getInstance()->insertChildAt(m_stackArkUINodeHandle, child.getArkUINodeHandle(), index));
-        }
+        m_stackArkUINodeHandle = child.getArkUINodeHandle();
+        maybeThrow(NativeNodeApi::getInstance()->insertChildAt(m_nodeHandle, child.getArkUINodeHandle(), index));
     }
 
     void SafeAreaViewStackNode::removeChild(ArkUINode &child) {
-        if (m_stackArkUINodeHandle != nullptr) {
-            maybeThrow(NativeNodeApi::getInstance()->removeChild(m_stackArkUINodeHandle, child.getArkUINodeHandle()));
-            m_stackArkUINodeHandle = nullptr;
+        maybeThrow(NativeNodeApi::getInstance()->removeChild(m_nodeHandle, child.getArkUINodeHandle()));
+        if (child.getArkUINodeHandle() == m_stackArkUINodeHandle) {
+            m_stackArkUINodeHandle == nullptr;
         }
     }
 
-    SafeAreaViewStackNode::~SafeAreaViewStackNode() {}
-
-    SafeAreaViewStackNode &SafeAreaViewStackNode::contentSetMargin(const safeArea::EdgeInsets &edgeInsets) {
-        ArkUI_NumberValue marginValue[] = {(float)edgeInsets.top, (float)edgeInsets.right, (float)edgeInsets.bottom, (float)edgeInsets.left};
+    void SafeAreaViewStackNode::setMargin(safeArea::EdgeInsets &edgeInsets) {
+        ArkUI_NumberValue marginValue[] = {(float)edgeInsets.top, (float)edgeInsets.right, (float)edgeInsets.bottom,
+                                           (float)edgeInsets.left};
         ArkUI_AttributeItem marginItem = {marginValue, sizeof(marginValue) / sizeof(ArkUI_NumberValue)};
         NativeNodeApi::getInstance()->setAttribute(m_nodeHandle, NODE_MARGIN, &marginItem);
-        return *this;
     }
 
-    SafeAreaViewStackNode &SafeAreaViewStackNode::contentSetPadding(const safeArea::EdgeInsets &edgeInsets) {
-        ArkUI_NumberValue paddingValue[] = {(float)edgeInsets.top, (float)edgeInsets.right, (float)edgeInsets.bottom, (float)edgeInsets.left};
-        ArkUI_AttributeItem paddingItem = {paddingValue, sizeof(paddingValue) / sizeof(ArkUI_NumberValue)};
-        NativeNodeApi::getInstance()->setAttribute(m_stackArkUINodeHandle, NODE_PADDING, &paddingItem);
-        return *this;
-    }
-
-    
+    SafeAreaViewStackNode::~SafeAreaViewStackNode() {}
 } // namespace rnoh
