@@ -30,21 +30,20 @@ namespace rnoh {
 
     SafeAreaViewComponentInstance::SafeAreaViewComponentInstance(Context context)
         : CppComponentInstance(std::move(context)) {
-        m_safeAreaViewStackNode.insertChild(m_stackNode, 0);
     }
 
     void SafeAreaViewComponentInstance::onChildInserted(ComponentInstance::Shared const &childComponentInstance,
                                                         std::size_t index) {
         CppComponentInstance::onChildInserted(childComponentInstance, index);
-        m_stackNode.insertChild(childComponentInstance->getLocalRootArkUINode(), index);
+        m_safeAreaViewStackNode.insertChild(childComponentInstance->getLocalRootArkUINode(), index);
     }
 
     void SafeAreaViewComponentInstance::onChildRemoved(ComponentInstance::Shared const &childComponentInstance) {
         CppComponentInstance::onChildRemoved(childComponentInstance);
-        m_stackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
+        m_safeAreaViewStackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
     };
 
-    SafeAreaViewStackNode &SafeAreaViewComponentInstance::getLocalRootArkUINode() { return m_safeAreaViewStackNode; }
+    StackNode &SafeAreaViewComponentInstance::getLocalRootArkUINode() { return m_safeAreaViewStackNode; }
 
     std::string to_string(facebook::react::RNCSafeAreaViewMode mode) {
         switch (mode) {
@@ -86,10 +85,10 @@ namespace rnoh {
                                        getEdgeValue(edges.left, data.insets.left, edgesData.left)};
         safeArea::EdgeInsets zeroEdgeInsets = {0, 0, 0, 0};
         if (std::strcmp(to_string(p->mode).c_str(), "MARGIN") == 0) {
-            m_safeAreaViewStackNode.setMargin(insets);
+            m_safeAreaViewStackNode.setMargin(insets.left, insets.top, insets.right, insets.bottom);
             contentSetPadding(zeroEdgeInsets);
         } else {
-            m_safeAreaViewStackNode.setMargin(zeroEdgeInsets);
+            m_safeAreaViewStackNode.setMargin(zeroEdgeInsets.left, zeroEdgeInsets.top, zeroEdgeInsets.right, zeroEdgeInsets.bottom);
             contentSetPadding(insets);
         }
     }
@@ -98,7 +97,7 @@ namespace rnoh {
         ArkUI_NumberValue paddingValue[] = {(float)edgeInsets.top, (float)edgeInsets.right, (float)edgeInsets.bottom,
                                             (float)edgeInsets.left};
         ArkUI_AttributeItem paddingItem = {paddingValue, sizeof(paddingValue) / sizeof(ArkUI_NumberValue)};
-        NativeNodeApi::getInstance()->setAttribute(m_stackNode.getArkUINodeHandle(), NODE_PADDING, &paddingItem);
+        NativeNodeApi::getInstance()->setAttribute(m_safeAreaViewStackNode.getArkUINodeHandle(), NODE_PADDING, &paddingItem);
     }
 
     std::double_t SafeAreaViewComponentInstance::getEdgeValue(std::string edgeMode, double_t insetValue,
@@ -132,24 +131,6 @@ namespace rnoh {
             LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> margin: "
                       << props->rawProps["margin"].asInt();
         }
-        m_stackNode.setSize(m_layoutMetrics.frame.size);
-        m_stackNode.setBackgroundColor(props->backgroundColor);
-        facebook::react::BorderMetrics borderMetrics = props->resolveBorderMetrics(m_layoutMetrics);
-        m_stackNode.setBorderWidth(borderMetrics.borderWidths);
-        m_stackNode.setBorderRadius(borderMetrics.borderRadii);
-        auto opacity = props->opacity;
-        float validOpacity = std::max(0.0f, std::min((float)opacity, 1.0f));
-        facebook::react::Transform transform = props->transform;
-        if (props->backfaceVisibility == facebook::react::BackfaceVisibility::Hidden) {
-            facebook::react::Vector vec{0, 0, 1, 0};
-            auto resVec = transform * vec;
-            if (resVec.z < 0.0) {
-                validOpacity = 0.0;
-            }
-        }
-        m_stackNode.setOpacity(validOpacity);
-        m_stackNode.setTransform(props->transform, m_layoutMetrics.pointScaleFactor);
-        m_stackNode.setClip(props->getClipsContentToBounds() ? 1 : 0);
         updateInsert(props);
     }
 
