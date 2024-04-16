@@ -32,7 +32,7 @@ import {
   ViewDescriptorWrapperBase,
   RNViewManager,
   ViewBaseDescriptor
-} from 'rnoh'
+} from '@rnoh/react-native-openharmony'
 
 import { SafeAreaViewTurboModule } from "./SafeViewTurboModule"
 import { Event, Tag } from './common/SafeAreaType';

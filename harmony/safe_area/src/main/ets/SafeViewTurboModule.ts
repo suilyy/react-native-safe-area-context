@@ -24,8 +24,8 @@
 
 
 import window from '@ohos.window';
-import { TurboModule } from 'rnoh/ts';
-import type { TurboModuleContext } from 'rnoh/ts';
+import { TurboModule } from '@rnoh/react-native-openharmony/ts';
+import type { TurboModuleContext } from '@rnoh/react-native-openharmony/ts';
 import type { EdgeInsets, Frame, Event } from './common/SafeAreaType';
 
 const TAG: string = '[RNOH]SafeAreaViewTurboModule'

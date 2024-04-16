@@ -24,22 +24,10 @@
 
 #pragma once
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
-#include <react/renderer/components/view/ConcreteViewShadowNode.h>
-#include "RNCSafeAreaProviderEventEmitters.h"
-#include "Props.h"
-#include "RNCState.h"
+#include "ShadowNodes.h"
 
 namespace facebook {
     namespace react {
-        extern const char RNCSafeAreaProviderComponentName[] = "RNCSafeAreaProvider";
-        extern const char RNCSafeAreaViewComponentName[] = "RNCSafeAreaView";
-
-        using RNCSafeAreaProviderShadowNode =
-            ConcreteViewShadowNode<RNCSafeAreaProviderComponentName, RNCSafeAreaProviderProps,
-                                   RNCSafeAreaProviderEventEmitter, RNCState>;
-
-        using RNCSafeAreaViewShadowNode = ConcreteViewShadowNode<RNCSafeAreaViewComponentName, RNCSafeAreaViewProps,
-                                                                 RNCSafeAreaViewEventEmitter, RNCState>;
 
         using RNCSafeAreaProviderComponentDescriptor = ConcreteComponentDescriptor<RNCSafeAreaProviderShadowNode>;
 

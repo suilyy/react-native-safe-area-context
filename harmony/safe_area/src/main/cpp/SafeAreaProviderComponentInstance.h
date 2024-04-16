@@ -21,25 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 #pragma once
-#ifdef ANDROID
-#include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
-#endif
+#include <react/renderer/components/view/ViewEventEmitter.h>
+#include "RNCSafeAreaProviderEventEmitters.h"
+#include "RNOH/CppComponentInstance.h"
+#include "RNOH/arkui/StackNode.h"
+#include "ShadowNodes.h"
 
-namespace facebook {
-    namespace react {
-        class RNCState {
-        public:
-            RNCState() = default;
+namespace rnoh {
+    class SafeAreaProviderComponentInstance : public CppComponentInstance<facebook::react::RNCSafeAreaProviderShadowNode> {
+    private:
+        StackNode m_stackNode;
+    public:
+        SafeAreaProviderComponentInstance(Context context);
 
-#ifdef ANDROID
-            RNCSafeAreaProviderState(RNCSafeAreaProviderState const &previousState, folly::dynamic data){};
-            folly::dynamic getDynamic() const { return {}; };
-            MapBuffer getMapBuffer() const { return MapBufferBuilder::EMPTY(); };
-#endif
-        };
-    } // namespace react
-} // namespace facebook
+        void onChildInserted(ComponentInstance::Shared const &childComponentInstance, std::size_t index) override;
+
+        void onChildRemoved(ComponentInstance::Shared const &childComponentInstance) override;
+
+        StackNode &getLocalRootArkUINode() override;
+    
+        void onPropsChanged(SharedConcreteProps const &props) override;
+
+        void onEventEmitterChanged(SharedConcreteEventEmitter const &eventEmitter) override;
+    };
+} // namespace rnoh

@@ -21,26 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+#pragma once
+#include "RNOH/CppComponentInstance.h"
+#include "RNOH/arkui/StackNode.h"
+#include "SafeAreaBeanData.h"
+#include "ShadowNodes.h"
 
-import { RNPackage, TurboModulesFactory } from '@rnoh/react-native-openharmony/ts';
-import type { TurboModule, TurboModuleContext } from '@rnoh/react-native-openharmony/ts';
-import { SafeAreaViewTurboModule } from './SafeViewTurboModule';
+namespace rnoh {
+    class SafeAreaViewComponentInstance : public CppComponentInstance<facebook::react::RNCSafeAreaViewShadowNode> {
+    private:
+        StackNode m_safeAreaViewStackNode;
+    public:
+        SafeAreaViewComponentInstance(Context context);
 
-class SafeAreaTurboModulesFactory extends TurboModulesFactory {
-  createTurboModule(name: string): TurboModule | null {
-    if (name === 'RNCSafeAreaContext') {
-      return new SafeAreaViewTurboModule(this.ctx);
-    }
-    return null;
-  }
+        void onChildInserted(ComponentInstance::Shared const &childComponentInstance, std::size_t index) override;
 
-  hasTurboModule(name: string): boolean {
-    return name === 'RNCSafeAreaContext';
-  }
-}
+        void onChildRemoved(ComponentInstance::Shared const &childComponentInstance) override;
 
-export class SafeAreaViewPackage extends RNPackage {
-  createTurboModulesFactory(ctx: TurboModuleContext): TurboModulesFactory {
-    return new SafeAreaTurboModulesFactory(ctx);
-  }
-}
+        void onPropsChanged(SharedConcreteProps const &props) override;
+
+        StackNode &getLocalRootArkUINode() override;
+
+        void updateInsert(SharedConcreteProps p);
+    
+        void contentSetPadding(safeArea::EdgeInsets edgeInsets);
+
+        std::double_t getEdgeValue(std::string edgeMode, double_t insetValue, double_t edgeValue);
+    };
+} // namespace rnoh

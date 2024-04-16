@@ -5,11 +5,11 @@
 
   },
   "author": "",
-  "name": "safe_area",
+  "name": "@react-native-oh-tpl/react-native-safe-area-context",
   "description": "Please describe the basic information.",
-  "main": "./index.ets",
-  "version": "4.7.4-0.0.8",
+  "main": "index.ets",
+  "version": "4.7.4-0.1.2",
   "dependencies": {
-    "rnoh": "file:../rnoh"
+    "@rnoh/react-native-openharmony": "file:../react_native_openharmony"
   }
 }

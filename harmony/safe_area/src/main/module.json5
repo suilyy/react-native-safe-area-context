@@ -1,10 +1,7 @@
 {
-  "module": {
-    "name": "safe_area",
-    "type": "har",
-    "deviceTypes": [
-      "default",
-      "tablet"
-    ]
-  }
+  module: {
+    name: 'safe_area',
+    type: 'har',
+    deviceTypes: ['default'],
+  },
 }

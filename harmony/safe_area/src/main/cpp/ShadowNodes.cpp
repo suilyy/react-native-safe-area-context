@@ -22,25 +22,12 @@
  * SOFTWARE.
  */
 
-import { RNPackage, TurboModulesFactory } from '@rnoh/react-native-openharmony/ts';
-import type { TurboModule, TurboModuleContext } from '@rnoh/react-native-openharmony/ts';
-import { SafeAreaViewTurboModule } from './SafeViewTurboModule';
+#include "ShadowNodes.h"
 
-class SafeAreaTurboModulesFactory extends TurboModulesFactory {
-  createTurboModule(name: string): TurboModule | null {
-    if (name === 'RNCSafeAreaContext') {
-      return new SafeAreaViewTurboModule(this.ctx);
-    }
-    return null;
-  }
+namespace facebook{
+  namespace react{
+      extern const char RNCSafeAreaProviderComponentName[] = "RNCSafeAreaProvider";
+      extern const char RNCSafeAreaViewComponentName[] = "RNCSafeAreaView";
 
-  hasTurboModule(name: string): boolean {
-    return name === 'RNCSafeAreaContext';
-  }
-}
-
-export class SafeAreaViewPackage extends RNPackage {
-  createTurboModulesFactory(ctx: TurboModuleContext): TurboModulesFactory {
-    return new SafeAreaTurboModulesFactory(ctx);
-  }
-}
+  } // namespace react
+} // namespace facebook

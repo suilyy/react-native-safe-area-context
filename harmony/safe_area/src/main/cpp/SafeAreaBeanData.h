@@ -22,25 +22,35 @@
  * SOFTWARE.
  */
 
-import { RNPackage, TurboModulesFactory } from '@rnoh/react-native-openharmony/ts';
-import type { TurboModule, TurboModuleContext } from '@rnoh/react-native-openharmony/ts';
-import { SafeAreaViewTurboModule } from './SafeViewTurboModule';
+#ifndef HARMONY_SAFEAREABEANDATA_H
+#define HARMONY_SAFEAREABEANDATA_H
+#include <string>
+namespace safeArea {
+    struct EdgeInsets {
+        double_t top;
+        double_t right;
+        double_t bottom;
+        double_t left;
+    };
 
-class SafeAreaTurboModulesFactory extends TurboModulesFactory {
-  createTurboModule(name: string): TurboModule | null {
-    if (name === 'RNCSafeAreaContext') {
-      return new SafeAreaViewTurboModule(this.ctx);
-    }
-    return null;
-  }
+    struct Edge {
+        std::string top;
+        std::string right;
+        std::string bottom;
+        std::string left;
+    };
 
-  hasTurboModule(name: string): boolean {
-    return name === 'RNCSafeAreaContext';
-  }
-}
+    struct Frame {
+        double_t x;
+        double_t y;
+        double_t width;
+        double_t height;
+    };
 
-export class SafeAreaViewPackage extends RNPackage {
-  createTurboModulesFactory(ctx: TurboModuleContext): TurboModulesFactory {
-    return new SafeAreaTurboModulesFactory(ctx);
-  }
-}
+    struct Event {
+        EdgeInsets insets;
+        Frame frame;
+    };
+} // namespace safeArea
+
+#endif // HARMONY_SAFEAREABEANDATA_H

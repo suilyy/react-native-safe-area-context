@@ -21,26 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+#ifndef HARMONY_TURBOMODULEREQUEST_H
+#define HARMONY_TURBOMODULEREQUEST_H
+#include "RNOH/CppComponentInstance.h"
+#include "SafeAreaBeanData.h"
+class TurboModuleRequest {
+public:
+    safeArea::Event getTurboModuleData(rnoh::ComponentInstance::Dependencies::Shared deps);
+};
 
-import { RNPackage, TurboModulesFactory } from '@rnoh/react-native-openharmony/ts';
-import type { TurboModule, TurboModuleContext } from '@rnoh/react-native-openharmony/ts';
-import { SafeAreaViewTurboModule } from './SafeViewTurboModule';
-
-class SafeAreaTurboModulesFactory extends TurboModulesFactory {
-  createTurboModule(name: string): TurboModule | null {
-    if (name === 'RNCSafeAreaContext') {
-      return new SafeAreaViewTurboModule(this.ctx);
-    }
-    return null;
-  }
-
-  hasTurboModule(name: string): boolean {
-    return name === 'RNCSafeAreaContext';
-  }
-}
-
-export class SafeAreaViewPackage extends RNPackage {
-  createTurboModulesFactory(ctx: TurboModuleContext): TurboModulesFactory {
-    return new SafeAreaTurboModulesFactory(ctx);
-  }
-}
+#endif // HARMONY_TURBOMODULEREQUEST_H

@@ -38,7 +38,7 @@ import {
   CompactValue,
   Edges,
   Point
-} from 'rnoh'
+} from '@rnoh/react-native-openharmony'
 
 import { SafeAreaViewModifier } from './SafeAreaViewModifier'
 import { SafeAreaViewTurboModule } from "./SafeViewTurboModule"

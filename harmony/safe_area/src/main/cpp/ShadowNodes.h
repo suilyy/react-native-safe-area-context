@@ -22,25 +22,33 @@
  * SOFTWARE.
  */
 
-import { RNPackage, TurboModulesFactory } from '@rnoh/react-native-openharmony/ts';
-import type { TurboModule, TurboModuleContext } from '@rnoh/react-native-openharmony/ts';
-import { SafeAreaViewTurboModule } from './SafeViewTurboModule';
+#ifndef HARMONY_SAFEAREA_SRC_MAIN_CPP_SHADOWNODES_H
+#define HARMONY_SAFEAREA_SRC_MAIN_CPP_SHADOWNODES_H
 
-class SafeAreaTurboModulesFactory extends TurboModulesFactory {
-  createTurboModule(name: string): TurboModule | null {
-    if (name === 'RNCSafeAreaContext') {
-      return new SafeAreaViewTurboModule(this.ctx);
-    }
-    return null;
-  }
+#include "Props.h"
+#include "RNCSafeAreaProviderEventEmitters.h"
+#include <jsi/jsi.h>
+#include <react/renderer/components/view/ConcreteViewShadowNode.h>
+#include <react/renderer/components/view/ViewShadowNode.h>
 
-  hasTurboModule(name: string): boolean {
-    return name === 'RNCSafeAreaContext';
-  }
-}
+namespace facebook{
+  namespace react{
 
-export class SafeAreaViewPackage extends RNPackage {
-  createTurboModulesFactory(ctx: TurboModuleContext): TurboModulesFactory {
-    return new SafeAreaTurboModulesFactory(ctx);
-  }
-}
+    JSI_EXPORT extern const char RNCSafeAreaProviderComponentName[];
+    JSI_EXPORT extern const char RNCSafeAreaViewComponentName[];
+
+    /*
+     * `ShadowNode` for <RNCSafeAreaProvider> component.
+     */
+    using RNCSafeAreaProviderShadowNode =
+        ConcreteViewShadowNode<RNCSafeAreaProviderComponentName, RNCSafeAreaProviderProps, RNCSafeAreaProviderEventEmitter>;
+
+    /*
+     * `ShadowNode` for <RNCSafeAreaView> component.
+     */
+    using RNCSafeAreaViewShadowNode = ConcreteViewShadowNode<RNCSafeAreaViewComponentName, RNCSafeAreaViewProps,
+                                                             RNCSafeAreaViewEventEmitter>;
+
+  } // namespace react
+} // namespace facebook
+#endif

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { TransformMatrix } from 'rnoh'
+import { TransformMatrix } from '@rnoh/react-native-openharmony'
 import { SafeAreaViewDescriptorWrapper } from './SafeAreaView'
 import matrix4 from '@ohos.matrix4'
 
