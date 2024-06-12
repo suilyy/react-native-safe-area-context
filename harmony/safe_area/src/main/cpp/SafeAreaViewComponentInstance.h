@@ -31,6 +31,7 @@ namespace rnoh {
     class SafeAreaViewComponentInstance : public CppComponentInstance<facebook::react::RNCSafeAreaViewShadowNode> {
     private:
         SafeAreaStackNode m_safeAreaViewStackNode;
+        float_t safeAreaTop;
     public:
         SafeAreaViewComponentInstance(Context context);
 
@@ -47,5 +48,7 @@ namespace rnoh {
         void contentSetPadding(safeArea::EdgeInsets edgeInsets);
 
         std::double_t getEdgeValue(std::string edgeMode, double_t insetValue, double_t edgeValue);
+    
+        facebook::react::Point getCurrentOffset() const override;
     };
 } // namespace rnoh

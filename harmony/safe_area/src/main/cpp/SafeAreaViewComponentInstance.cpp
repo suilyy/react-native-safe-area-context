@@ -58,6 +58,8 @@ namespace rnoh {
         }
     }
 
+    facebook::react::Point SafeAreaViewComponentInstance::getCurrentOffset() const { return {0, 0 - safeAreaTop}; }
+
     void SafeAreaViewComponentInstance::updateInsert(SharedConcreteProps p) {
         safeArea::Edge edges = {"additive", "additive", "additive", "additive"};
         edges = {p->edges.top, p->edges.right, p->edges.bottom, p->edges.left};
@@ -83,6 +85,7 @@ namespace rnoh {
                                        getEdgeValue(edges.right, data.insets.right, edgesData.right),
                                        getEdgeValue(edges.bottom, data.insets.bottom, edgesData.bottom),
                                        getEdgeValue(edges.left, data.insets.left, edgesData.left)};
+        safeAreaTop = insets.top;
         safeArea::EdgeInsets zeroEdgeInsets = {0, 0, 0, 0};
         if (std::strcmp(to_string(p->mode).c_str(), "MARGIN") == 0) {
             m_safeAreaViewStackNode.setMargin(insets.left, insets.top, insets.right, insets.bottom);
