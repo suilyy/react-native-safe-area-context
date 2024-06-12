@@ -32,21 +32,21 @@ safeArea::Event TurboModuleRequest::getTurboModuleData(rnoh::ComponentInstance::
         auto turboModule = rnInstancePtr->getTurboModule("RNCSafeAreaContext");
         auto arkTsTurboModule = std::dynamic_pointer_cast<rnoh::ArkTSTurboModule>(turboModule);
         result1 = arkTsTurboModule->callSync("getConstants", {});
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: x:"
+        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: x:"
                   << result1["initialWindowMetrics"]["frame"]["x"].asDouble();
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: y:"
+        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: y:"
                   << result1["initialWindowMetrics"]["frame"]["y"].asDouble();
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: width:"
+        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: width:"
                   << result1["initialWindowMetrics"]["frame"]["width"].asDouble();
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: height:"
+        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: height:"
                   << result1["initialWindowMetrics"]["frame"]["height"].asDouble();
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: top:"
+        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: top:"
                   << result1["initialWindowMetrics"]["insets"]["top"].asDouble();
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: right:"
+        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: right:"
                   << result1["initialWindowMetrics"]["insets"]["right"].asDouble();
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: bottom:"
+        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: bottom:"
                   << result1["initialWindowMetrics"]["insets"]["bottom"].asDouble();
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: left:"
+        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> initialWindowMetrics: left:"
                   << result1["initialWindowMetrics"]["insets"]["left"].asDouble();
         double_t frameX = result1["initialWindowMetrics"]["frame"]["x"].asDouble();
         double_t frameY = result1["initialWindowMetrics"]["frame"]["y"].asDouble();

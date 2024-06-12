@@ -48,10 +48,10 @@ namespace rnoh {
     std::string to_string(facebook::react::RNCSafeAreaViewMode mode) {
         switch (mode) {
         case facebook::react::RNCSafeAreaViewMode::PADDING:
-            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.left: RNCSafeAreaViewMode::PADDING";
+            DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> edges.left: RNCSafeAreaViewMode::PADDING";
             return "PADDING";
         case facebook::react::RNCSafeAreaViewMode::MARGIN:
-            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.left: RNCSafeAreaViewMode::MARGIN";
+            DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> edges.left: RNCSafeAreaViewMode::MARGIN";
             return "MARGIN";
         default:
             return "UNKNOWN";
@@ -118,17 +118,17 @@ namespace rnoh {
 
     void SafeAreaViewComponentInstance::onPropsChanged(SharedConcreteProps const &props) {
         CppComponentInstance::onPropsChanged(props);
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.left: " << props->edges.left;
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.right: " << props->edges.right;
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.top: " << props->edges.top;
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> edges.bottom: " << props->edges.bottom;
-        LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> mode: " << to_string(props->mode);
+        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> edges.left: " << props->edges.left;
+        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> edges.right: " << props->edges.right;
+        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> edges.top: " << props->edges.top;
+        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> edges.bottom: " << props->edges.bottom;
+        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> mode: " << to_string(props->mode);
         if (props->rawProps.get_ptr("padding") != nullptr) {
-            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> padding: "
+            DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> padding: "
                       << props->rawProps["padding"].asInt();
         }
         if (props->rawProps.get_ptr("margin") != nullptr) {
-            LOG(INFO) << "[clx] <SafeAreaViewComponentInstance::setProps> margin: "
+            DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> margin: "
                       << props->rawProps["margin"].asInt();
         }
         updateInsert(props);
