@@ -39,7 +39,7 @@ namespace rnoh {
         m_stackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
     };
 
-    StackNode &SafeAreaProviderComponentInstance::getLocalRootArkUINode() { return m_stackNode; }
+    SafeAreaStackNode &SafeAreaProviderComponentInstance::getLocalRootArkUINode() { return m_stackNode; }
 
     void SafeAreaProviderComponentInstance::onPropsChanged(SharedConcreteProps const &props) {
         CppComponentInstance::onPropsChanged(props);

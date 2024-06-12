@@ -43,7 +43,7 @@ namespace rnoh {
         m_safeAreaViewStackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
     };
 
-    StackNode &SafeAreaViewComponentInstance::getLocalRootArkUINode() { return m_safeAreaViewStackNode; }
+    SafeAreaStackNode &SafeAreaViewComponentInstance::getLocalRootArkUINode() { return m_safeAreaViewStackNode; }
 
     std::string to_string(facebook::react::RNCSafeAreaViewMode mode) {
         switch (mode) {

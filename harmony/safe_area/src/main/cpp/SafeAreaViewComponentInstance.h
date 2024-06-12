@@ -23,14 +23,14 @@
  */
 #pragma once
 #include "RNOH/CppComponentInstance.h"
-#include "RNOH/arkui/StackNode.h"
 #include "SafeAreaBeanData.h"
+#include "SafeAreaStackNode.h"
 #include "ShadowNodes.h"
 
 namespace rnoh {
     class SafeAreaViewComponentInstance : public CppComponentInstance<facebook::react::RNCSafeAreaViewShadowNode> {
     private:
-        StackNode m_safeAreaViewStackNode;
+        SafeAreaStackNode m_safeAreaViewStackNode;
     public:
         SafeAreaViewComponentInstance(Context context);
 
@@ -40,7 +40,7 @@ namespace rnoh {
 
         void onPropsChanged(SharedConcreteProps const &props) override;
 
-        StackNode &getLocalRootArkUINode() override;
+        SafeAreaStackNode &getLocalRootArkUINode() override;
 
         void updateInsert(SharedConcreteProps p);
     
