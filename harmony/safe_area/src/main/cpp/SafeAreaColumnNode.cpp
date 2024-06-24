@@ -21,36 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
-#include "RNOH/CppComponentInstance.h"
-#include "SafeAreaBeanData.h"
 #include "SafeAreaColumnNode.h"
-#include "SafeAreaStackNode.h"
-#include "ShadowNodes.h"
+
+#include <glog/logging.h>
+#include <memory>
+#include "RNOH/arkui/NativeNodeApi.h"
 
 namespace rnoh {
-    class SafeAreaViewComponentInstance : public CppComponentInstance<facebook::react::RNCSafeAreaViewShadowNode> {
-    private:
-        SafeAreaStackNode m_safeAreaViewStackNode;
-        SafeAreaColumnNode m_safeAreaViewColumnNode;
-        float_t safeAreaTop;
-    public:
-        SafeAreaViewComponentInstance(Context context);
 
-        void onChildInserted(ComponentInstance::Shared const &childComponentInstance, std::size_t index) override;
+SafeAreaColumnNode::SafeAreaColumnNode()
+    : ArkUINode(NativeNodeApi::getInstance()->createNode(ArkUI_NodeType::ARKUI_NODE_COLUMN)) {}
 
-        void onChildRemoved(ComponentInstance::Shared const &childComponentInstance) override;
+SafeAreaColumnNode::~SafeAreaColumnNode() {}
 
-        void onPropsChanged(SharedConcreteProps const &props) override;
+void SafeAreaColumnNode::insertChild(ArkUINode &child, std::size_t index) {
+    maybeThrow(NativeNodeApi::getInstance()->insertChildAt(m_nodeHandle, child.getArkUINodeHandle(),
+                                                           static_cast<int32_t>(index)));
+}
 
-        SafeAreaColumnNode &getLocalRootArkUINode() override;
-
-        void updateInsert(SharedConcreteProps p);
-    
-        void contentSetPadding(safeArea::EdgeInsets edgeInsets);
-
-        std::double_t getEdgeValue(std::string edgeMode, double_t insetValue, double_t edgeValue);
-    
-        facebook::react::Point getCurrentOffset() const override;
-    };
+void SafeAreaColumnNode::removeChild(ArkUINode &child) {
+    maybeThrow(NativeNodeApi::getInstance()->removeChild(m_nodeHandle, child.getArkUINodeHandle()));
+}
 } // namespace rnoh

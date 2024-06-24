@@ -30,6 +30,7 @@ namespace rnoh {
 
     SafeAreaViewComponentInstance::SafeAreaViewComponentInstance(Context context)
         : CppComponentInstance(std::move(context)) {
+        m_safeAreaViewColumnNode.insertChild(m_safeAreaViewStackNode, 0);
     }
 
     void SafeAreaViewComponentInstance::onChildInserted(ComponentInstance::Shared const &childComponentInstance,
@@ -43,7 +44,7 @@ namespace rnoh {
         m_safeAreaViewStackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
     };
 
-    SafeAreaStackNode &SafeAreaViewComponentInstance::getLocalRootArkUINode() { return m_safeAreaViewStackNode; }
+    SafeAreaColumnNode &SafeAreaViewComponentInstance::getLocalRootArkUINode() { return m_safeAreaViewColumnNode; }
 
     std::string to_string(facebook::react::RNCSafeAreaViewMode mode) {
         switch (mode) {
@@ -86,21 +87,20 @@ namespace rnoh {
                                        getEdgeValue(edges.bottom, data.insets.bottom, edgesData.bottom),
                                        getEdgeValue(edges.left, data.insets.left, edgesData.left)};
         safeAreaTop = insets.top;
+        float_t width = data.frame.width - insets.left - insets.right;
+        float_t height = data.frame.height - insets.top - insets.bottom;
         safeArea::EdgeInsets zeroEdgeInsets = {0, 0, 0, 0};
         if (std::strcmp(to_string(p->mode).c_str(), "MARGIN") == 0) {
-            m_safeAreaViewStackNode.setMargin(insets.left, insets.top, insets.right, insets.bottom);
-            contentSetPadding(zeroEdgeInsets);
+            m_safeAreaViewColumnNode.setMargin(insets.left, insets.top, insets.right, insets.bottom);
+            m_safeAreaViewColumnNode.setPadding(zeroEdgeInsets.left, zeroEdgeInsets.top, zeroEdgeInsets.right,
+                                                zeroEdgeInsets.bottom);
+            m_safeAreaViewColumnNode.setSize({width, height});
         } else {
-            m_safeAreaViewStackNode.setMargin(zeroEdgeInsets.left, zeroEdgeInsets.top, zeroEdgeInsets.right, zeroEdgeInsets.bottom);
-            contentSetPadding(insets);
+            m_safeAreaViewColumnNode.setMargin(zeroEdgeInsets.left, zeroEdgeInsets.top, zeroEdgeInsets.right,
+                                               zeroEdgeInsets.bottom);
+            m_safeAreaViewColumnNode.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+            m_safeAreaViewStackNode.setSize({width, height});
         }
-    }
-
-    void SafeAreaViewComponentInstance::contentSetPadding(const safeArea::EdgeInsets edgeInsets) {
-        ArkUI_NumberValue paddingValue[] = {(float)edgeInsets.top, (float)edgeInsets.right, (float)edgeInsets.bottom,
-                                            (float)edgeInsets.left};
-        ArkUI_AttributeItem paddingItem = {paddingValue, sizeof(paddingValue) / sizeof(ArkUI_NumberValue)};
-        NativeNodeApi::getInstance()->setAttribute(m_safeAreaViewStackNode.getArkUINodeHandle(), NODE_PADDING, &paddingItem);
     }
 
     std::double_t SafeAreaViewComponentInstance::getEdgeValue(std::string edgeMode, double_t insetValue,

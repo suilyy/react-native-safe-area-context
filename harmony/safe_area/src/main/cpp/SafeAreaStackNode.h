@@ -23,7 +23,6 @@ class SafeAreaStackNode : public ArkUINode {
       override;
   void onClick();
   void setStackNodeDelegate(SafeAreaStackNodeDelegate* safeAreaStackNodeDelegate);
-  SafeAreaStackNode& setMargin(float left, float top, float right, float bottom);
   SafeAreaStackNode& setAlign(int32_t align);
 };
 

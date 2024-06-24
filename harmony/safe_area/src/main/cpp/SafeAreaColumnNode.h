@@ -22,35 +22,17 @@
  * SOFTWARE.
  */
 #pragma once
-#include "RNOH/CppComponentInstance.h"
-#include "SafeAreaBeanData.h"
-#include "SafeAreaColumnNode.h"
-#include "SafeAreaStackNode.h"
-#include "ShadowNodes.h"
+
+#include "RNOH/arkui/ArkUINode.h"
 
 namespace rnoh {
-    class SafeAreaViewComponentInstance : public CppComponentInstance<facebook::react::RNCSafeAreaViewShadowNode> {
-    private:
-        SafeAreaStackNode m_safeAreaViewStackNode;
-        SafeAreaColumnNode m_safeAreaViewColumnNode;
-        float_t safeAreaTop;
-    public:
-        SafeAreaViewComponentInstance(Context context);
+class SafeAreaColumnNode : public ArkUINode {
+public:
+    SafeAreaColumnNode();
+    ~SafeAreaColumnNode() override;
 
-        void onChildInserted(ComponentInstance::Shared const &childComponentInstance, std::size_t index) override;
+    void insertChild(ArkUINode &child, std::size_t index);
+    void removeChild(ArkUINode &child);
+};
 
-        void onChildRemoved(ComponentInstance::Shared const &childComponentInstance) override;
-
-        void onPropsChanged(SharedConcreteProps const &props) override;
-
-        SafeAreaColumnNode &getLocalRootArkUINode() override;
-
-        void updateInsert(SharedConcreteProps p);
-    
-        void contentSetPadding(safeArea::EdgeInsets edgeInsets);
-
-        std::double_t getEdgeValue(std::string edgeMode, double_t insetValue, double_t edgeValue);
-    
-        facebook::react::Point getCurrentOffset() const override;
-    };
 } // namespace rnoh
