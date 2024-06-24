@@ -24,30 +24,41 @@
 
 
 import window from '@ohos.window';
-import { TurboModule } from '@rnoh/react-native-openharmony/ts';
 import type { TurboModuleContext } from '@rnoh/react-native-openharmony/ts';
-import type { EdgeInsets, Frame, Event } from './common/SafeAreaType';
+import { TurboModule } from '@rnoh/react-native-openharmony/ts';
+import type { EdgeInsets, Event, Frame } from './common/SafeAreaType';
+import Logger from './Logger';
 
 const TAG: string = '[RNOH]SafeAreaViewTurboModule'
 
 
 export class SafeAreaViewTurboModule extends TurboModule {
-  private windowInstance:window.Window = null;
+  private windowInstance: window.Window = null;
 
   constructor(protected ctx: TurboModuleContext) {
     super(ctx);
-    window.getLastWindow(this.ctx.uiAbilityContext, (err, data) => {
-      if (err.code) {
-        console.error(TAG, 'Failed to obtain the top window. Cause: ' + JSON.stringify(err));
-        return;
-      }
-      this.windowInstance = data
-    })
-    console.log(TAG, '[RNOH]:SafeAreaViewTurboModule constructor');
+    if (!this.windowInstance) {
+      window.getLastWindow(this.ctx.uiAbilityContext, (err, data) => {
+        if (err.code) {
+          Logger.debug(TAG, 'Failed to obtain the top window. Cause: ' + JSON.stringify(err));
+          return;
+        }
+        this.windowInstance = data
+      })
+      this.sleep(10);
+    }
+    Logger.debug(TAG, '[RNOH]:SafeAreaViewTurboModule constructor');
   }
 
-  getConstants():{} {
-    console.log(TAG, 'RNCSafeAreaContext console6666' + this.windowInstance);
+  sleep(delay: number) {
+    var start = new Date().getTime();
+    while ((new Date().getTime() - start) < delay) {
+      continue;
+    }
+  }
+
+  getConstants(): {} {
+    Logger.debug(TAG, 'RNCSafeAreaContext getConstants:' + this.windowInstance);
     let frame: Frame = {
       x: 0,
       y: 0,
@@ -84,7 +95,7 @@ export class SafeAreaViewTurboModule extends TurboModule {
       try {
         const windowInstance = await window.getLastWindow(this.ctx.uiAbilityContext);
         const windowInfo = windowInstance.getWindowProperties()
-        console.log(TAG, JSON.stringify(windowInfo));
+        Logger.debug(TAG, JSON.stringify(windowInfo));
         const frame: Frame = {
           x: px2vp(windowInfo.windowRect.left),
           y: px2vp(windowInfo.windowRect.top),
