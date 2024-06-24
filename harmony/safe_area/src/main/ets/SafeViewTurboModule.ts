@@ -74,6 +74,7 @@ export class SafeAreaViewTurboModule extends TurboModule {
     if (this.windowInstance != null) {
       const windowInfo = this.windowInstance.getWindowProperties()
       const avoidArea = this.windowInstance.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
+      const avoidAreaBottom = this.windowInstance.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
       frame = {
         x: px2vp(windowInfo.windowRect.left),
         y: px2vp(windowInfo.windowRect.top),
@@ -83,7 +84,7 @@ export class SafeAreaViewTurboModule extends TurboModule {
       insets = {
         top: px2vp(avoidArea.topRect.height),
         right: px2vp(avoidArea.rightRect.height),
-        bottom: px2vp(avoidArea.bottomRect.height),
+        bottom: px2vp(avoidAreaBottom.bottomRect.height),
         left: px2vp(avoidArea.leftRect.height)
       }
     }
@@ -113,10 +114,11 @@ export class SafeAreaViewTurboModule extends TurboModule {
         } else {
           let type = window.AvoidAreaType.TYPE_SYSTEM;
           let avoidArea = windowInstance.getWindowAvoidArea(type);
+          const avoidAreaBottom = this.windowInstance.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
           const insets: EdgeInsets = {
             top: px2vp(avoidArea.topRect.height),
             right: px2vp(avoidArea.rightRect.height),
-            bottom: px2vp(avoidArea.bottomRect.height),
+            bottom: px2vp(avoidAreaBottom.bottomRect.height),
             left: px2vp(avoidArea.leftRect.height)
           }
           resolve({ insets, frame })
