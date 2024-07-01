@@ -52,12 +52,16 @@ namespace rnoh {
         }
         TurboModuleRequest request;
         safeArea::Event data = request.getTurboModuleData(this->m_deps);
-        facebook::react::RNCSafeAreaProviderEventEmitter::OnInsetsChangeInsets insets = {
-            data.insets.top, data.insets.right, data.insets.bottom, data.insets.left};
         double x = getLayoutMetrics().frame.origin.x;
         double y = getLayoutMetrics().frame.origin.y;
         double width = getLayoutMetrics().frame.size.width;
         double height = getLayoutMetrics().frame.size.height;
+        double providerTop = MAX(data.insets.top - y, 0);
+        double providerRight = MAX(MIN(x + width - data.frame.width, 0) + data.insets.right, 0);
+        double providerBottom = MAX(MIN(y + height - data.frame.height, 0) + data.insets.bottom, 0);
+        double providerLeft = MAX(data.insets.left - x, 0);
+        facebook::react::RNCSafeAreaProviderEventEmitter::OnInsetsChangeInsets insets = {providerTop, providerRight,
+                                                                                         providerBottom, providerLeft};
         facebook::react::RNCSafeAreaProviderEventEmitter::OnInsetsChangeFrame frame = {x, y, width, height};
         facebook::react::RNCSafeAreaProviderEventEmitter::OnInsetsChange insetsChange = {insets, frame};
         newEventEmitter->onInsetsChange(insetsChange);
