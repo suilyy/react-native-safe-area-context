@@ -32,8 +32,6 @@ namespace rnoh {
     class SafeAreaViewComponentInstance : public CppComponentInstance<facebook::react::RNCSafeAreaViewShadowNode> {
     private:
         SafeAreaStackNode m_safeAreaViewStackNode;
-        SafeAreaColumnNode m_safeAreaViewColumnNode;
-        float_t safeAreaTop;
     public:
         SafeAreaViewComponentInstance(Context context);
 
@@ -43,14 +41,8 @@ namespace rnoh {
 
         void onPropsChanged(SharedConcreteProps const &props) override;
 
-        SafeAreaColumnNode &getLocalRootArkUINode() override;
+        SafeAreaStackNode &getLocalRootArkUINode() override;
 
         void updateInsert(SharedConcreteProps p);
-    
-        void contentSetPadding(safeArea::EdgeInsets edgeInsets);
-
-        std::double_t getEdgeValue(std::string edgeMode, double_t insetValue, double_t edgeValue);
-    
-        facebook::react::Point getCurrentOffset() const override;
     };
 } // namespace rnoh

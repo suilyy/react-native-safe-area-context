@@ -58,6 +58,14 @@ namespace facebook {
         class JSI_EXPORT RNCSafeAreaViewEventEmitter : public ViewEventEmitter {
         public:
             using ViewEventEmitter::ViewEventEmitter;
+            struct OnInsetsChangeInsets {
+                double top;
+                double right;
+                double bottom;
+                double left;
+            };
+
+            void onSafeAreaValueChange(OnInsetsChangeInsets value) const;
         };
 
     } // namespace react

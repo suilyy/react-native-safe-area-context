@@ -51,5 +51,20 @@ namespace facebook {
             });
         }
 
+        void RNCSafeAreaViewEventEmitter::onSafeAreaValueChange(OnInsetsChangeInsets event) const {
+            dispatchEvent("safeAreaValueChange", [event = std::move(event)](jsi::Runtime &runtime) {
+                auto payload = jsi::Object(runtime);
+                {
+                    auto insets = jsi::Object(runtime);
+                    insets.setProperty(runtime, "top", event.top);
+                    insets.setProperty(runtime, "right", event.right);
+                    insets.setProperty(runtime, "bottom", event.bottom);
+                    insets.setProperty(runtime, "left", event.left);
+                    payload.setProperty(runtime, "safeAreaViewInsetsValue", insets);
+                }
+                return payload;
+            });
+        }
+
     } // namespace react
 } // namespace facebook

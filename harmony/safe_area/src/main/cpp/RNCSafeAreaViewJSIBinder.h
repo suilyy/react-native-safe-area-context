@@ -44,7 +44,7 @@ namespace rnoh {
         facebook::jsi::Object createDirectEventTypes(facebook::jsi::Runtime &rt) override
         {
             facebook::jsi::Object events(rt);
-            events.setProperty(rt, "topInsetsChange", createDirectEvent(rt, "onInsetsChange"));
+            events.setProperty(rt, "topSafeAreaValueChange", createDirectEvent(rt, "onSafeAreaValueChange"));
             return events;
         }
     };
