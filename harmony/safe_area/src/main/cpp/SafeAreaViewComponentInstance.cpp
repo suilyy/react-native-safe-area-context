@@ -28,113 +28,33 @@
 
 namespace rnoh {
 
-    SafeAreaViewComponentInstance::SafeAreaViewComponentInstance(Context context)
-        : CppComponentInstance(std::move(context)) {
-        m_safeAreaViewColumnNode.insertChild(m_safeAreaViewStackNode, 0);
-    }
+SafeAreaViewComponentInstance::SafeAreaViewComponentInstance(Context context)
+    : CppComponentInstance(std::move(context)) {}
 
-    void SafeAreaViewComponentInstance::onChildInserted(ComponentInstance::Shared const &childComponentInstance,
-                                                        std::size_t index) {
-        CppComponentInstance::onChildInserted(childComponentInstance, index);
-        m_safeAreaViewStackNode.insertChild(childComponentInstance->getLocalRootArkUINode(), index);
-    }
+void SafeAreaViewComponentInstance::onChildInserted(ComponentInstance::Shared const &childComponentInstance,
+                                                    std::size_t index) {
+    CppComponentInstance::onChildInserted(childComponentInstance, index);
+    m_safeAreaViewStackNode.insertChild(childComponentInstance->getLocalRootArkUINode(), index);
+}
 
-    void SafeAreaViewComponentInstance::onChildRemoved(ComponentInstance::Shared const &childComponentInstance) {
-        CppComponentInstance::onChildRemoved(childComponentInstance);
-        m_safeAreaViewStackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
-    };
+void SafeAreaViewComponentInstance::onChildRemoved(ComponentInstance::Shared const &childComponentInstance) {
+    CppComponentInstance::onChildRemoved(childComponentInstance);
+    m_safeAreaViewStackNode.removeChild(childComponentInstance->getLocalRootArkUINode());
+};
 
-    SafeAreaColumnNode &SafeAreaViewComponentInstance::getLocalRootArkUINode() { return m_safeAreaViewColumnNode; }
+SafeAreaStackNode &SafeAreaViewComponentInstance::getLocalRootArkUINode() { return m_safeAreaViewStackNode; }
 
-    std::string to_string(facebook::react::RNCSafeAreaViewMode mode) {
-        switch (mode) {
-        case facebook::react::RNCSafeAreaViewMode::PADDING:
-            DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> edges.left: RNCSafeAreaViewMode::PADDING";
-            return "PADDING";
-        case facebook::react::RNCSafeAreaViewMode::MARGIN:
-            DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> edges.left: RNCSafeAreaViewMode::MARGIN";
-            return "MARGIN";
-        default:
-            return "UNKNOWN";
-        }
-    }
+void SafeAreaViewComponentInstance::updateInsert(SharedConcreteProps p) {
+    TurboModuleRequest request;
+    safeArea::Event data = request.getTurboModuleData(this->m_deps);
+    facebook::react::RNCSafeAreaViewEventEmitter::OnInsetsChangeInsets inset = {data.insets.top, data.insets.right,
+                                                                                data.insets.bottom, data.insets.left};
+    m_eventEmitter->onSafeAreaValueChange(inset);
+}
 
-    facebook::react::Point SafeAreaViewComponentInstance::getCurrentOffset() const { return {0, 0 - safeAreaTop}; }
-
-    void SafeAreaViewComponentInstance::updateInsert(SharedConcreteProps p) {
-        safeArea::Edge edges = {"additive", "additive", "additive", "additive"};
-        edges = {p->edges.top, p->edges.right, p->edges.bottom, p->edges.left};
-        TurboModuleRequest request;
-        safeArea::Event data = request.getTurboModuleData(this->m_deps);
-        safeArea::EdgeInsets edgesData;
-        float_t rawPadding = 0;
-        float_t rawMargin = 0;
-        if (p->rawProps.get_ptr("padding") != nullptr) {
-            rawPadding = p->rawProps["padding"].asInt();
-        }
-        if (p->rawProps.get_ptr("margin") != nullptr) {
-            rawMargin = p->rawProps["margin"].asInt();
-        }
-        safeArea::EdgeInsets marginInsets = {rawMargin, rawMargin, rawMargin, rawMargin};
-        safeArea::EdgeInsets paddingInsets = {rawPadding, rawPadding, rawPadding, rawPadding};
-        if (std::strcmp(to_string(p->mode).c_str(), "MARGIN") == 0) {
-            edgesData = marginInsets;
-        } else {
-            edgesData = paddingInsets;
-        }
-        safeArea::EdgeInsets insets = {getEdgeValue(edges.top, data.insets.top, edgesData.top),
-                                       getEdgeValue(edges.right, data.insets.right, edgesData.right),
-                                       getEdgeValue(edges.bottom, data.insets.bottom, edgesData.bottom),
-                                       getEdgeValue(edges.left, data.insets.left, edgesData.left)};
-        safeAreaTop = insets.top;
-        float_t width = data.frame.width - insets.left - insets.right;
-        float_t height = data.frame.height - insets.top - insets.bottom;
-        safeArea::EdgeInsets zeroEdgeInsets = {0, 0, 0, 0};
-        if (std::strcmp(to_string(p->mode).c_str(), "MARGIN") == 0) {
-            m_safeAreaViewColumnNode.setMargin(insets.left, insets.top, insets.right, insets.bottom);
-            m_safeAreaViewColumnNode.setPadding(zeroEdgeInsets.left, zeroEdgeInsets.top, zeroEdgeInsets.right,
-                                                zeroEdgeInsets.bottom);
-            m_safeAreaViewColumnNode.setSize({width, height});
-        } else {
-            m_safeAreaViewColumnNode.setMargin(zeroEdgeInsets.left, zeroEdgeInsets.top, zeroEdgeInsets.right,
-                                               zeroEdgeInsets.bottom);
-            m_safeAreaViewColumnNode.setPadding(insets.left, insets.top, insets.right, insets.bottom);
-            m_safeAreaViewStackNode.setSize({width, height});
-        }
-    }
-
-    std::double_t SafeAreaViewComponentInstance::getEdgeValue(std::string edgeMode, double_t insetValue,
-                                                              double_t edgeValue) {
-        if (std::strcmp(edgeMode.c_str(), "off") == 0) {
-            return 0;
-        } else if (std::strcmp(edgeMode.c_str(), "maximum") == 0) {
-            // insetValue 安全区域    edgeValue原区域
-            if (edgeValue > insetValue) {
-                return edgeValue - insetValue;
-            } else {
-                return insetValue - edgeValue;
-            }
-        } else {
-            return insetValue;
-        }
-    }
-
-    void SafeAreaViewComponentInstance::onPropsChanged(SharedConcreteProps const &props) {
-        CppComponentInstance::onPropsChanged(props);
-        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> edges.left: " << props->edges.left;
-        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> edges.right: " << props->edges.right;
-        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> edges.top: " << props->edges.top;
-        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> edges.bottom: " << props->edges.bottom;
-        DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> mode: " << to_string(props->mode);
-        if (props->rawProps.get_ptr("padding") != nullptr) {
-            DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> padding: "
-                      << props->rawProps["padding"].asInt();
-        }
-        if (props->rawProps.get_ptr("margin") != nullptr) {
-            DLOG(INFO) << "[safeArea] <SafeAreaViewComponentInstance::setProps> margin: "
-                      << props->rawProps["margin"].asInt();
-        }
-        updateInsert(props);
-    }
+void SafeAreaViewComponentInstance::onPropsChanged(SharedConcreteProps const &props) {
+    CppComponentInstance::onPropsChanged(props);
+    updateInsert(props);
+}
 
 } // namespace rnoh

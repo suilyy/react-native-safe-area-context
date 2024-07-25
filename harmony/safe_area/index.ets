@@ -21,6 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
+export * from "./ts"
 export * from "./src/main/ets/SafeAreaView"
 export * from "./src/main/ets/SafeAreaProvider"
