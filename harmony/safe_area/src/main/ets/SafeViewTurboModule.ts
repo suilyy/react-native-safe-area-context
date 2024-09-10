@@ -88,7 +88,7 @@ export class SafeAreaViewTurboModule extends TurboModule {
         left: px2vp(avoidArea.leftRect.height)
       }
     }
-    return { initialWindowMetrics: { frame, insets } }
+    return { "initialWindowMetrics": { frame, insets } }
   }
 
   getSafeAreaInsets(): Promise<Event> {
