@@ -21,8 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+#include <sys/param.h>
 #include "SafeAreaProviderComponentInstance.h"
 #include "TurboModuleRequest.h"
+
 namespace rnoh {
 
     SafeAreaProviderComponentInstance::SafeAreaProviderComponentInstance(Context context)
