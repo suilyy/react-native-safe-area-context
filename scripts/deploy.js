@@ -83,10 +83,10 @@ function runDeployment() {
               );
               
     
-              const changelogForCurrentVersion = execSync(
-                `npm run -s gen:changelog`
-              ).toString();
-              updateChangelog(version, changelogForCurrentVersion);
+              // const changelogForCurrentVersion = execSync(
+              //   `npm run -s gen:changelog`
+              // ).toString();
+              // updateChangelog(version, changelogForCurrentVersion);
     
               execSync(`npm publish --dry-run`, { stdio: 'inherit' });
     
@@ -94,8 +94,8 @@ function runDeployment() {
                 'Are changes good to be published and pushed to the upstream? (yes/no): ',
                 async (answer) => {
                   if (answer.toLowerCase() === 'yes') {
-                    // execSync(`npm publish`, { stdio: 'inherit' });
-                    // console.log('NPM Package was published successfully.');
+                    execSync(`npm publish`, { stdio: 'inherit' });
+                    console.log('NPM Package was published successfully.');
                     execSync(
                       `git checkout -b release-${UNSCOPED_NPM_PACKAGE_NAME}-${version}`
                     );
