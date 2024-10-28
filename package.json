@@ -47,6 +47,7 @@
     "format:write": "yarn format:prettier:write && yarn format:clang:write && yarn format:spotless:write",
     "release": "release-it",
     "prepare": "bob build",
+    "build": "tsc",
     "pack:prod": "npm pack",
     "prepack": "npm run build",
     "prepublishOnly": "npm run prepack && react-native verify-package-harmony --package-path . --skip-checks oh_package_name_is_derived_from_npm_package_name",
