@@ -25,19 +25,19 @@ const rl = readline.createInterface({
 });
 
 function runDeployment() {
-  // if (!process.cwd().endsWith(EXPECTED_EXECUTION_DIRECTORY_NAME)) {
-  //   console.log(
-  //     `This script should be executed from ${EXPECTED_EXECUTION_DIRECTORY_NAME} directory`
-  //   );
-  //   process.exit(1);
-  // }
+  if (!process.cwd().endsWith(EXPECTED_EXECUTION_DIRECTORY_NAME)) {
+    console.log(
+      `This script should be executed from ${EXPECTED_EXECUTION_DIRECTORY_NAME} directory`
+    );
+    process.exit(1);
+  }
 
-  // if (!isRepositoryClean()) {
-  //   console.log(
-  //     'Repository should be clean, on sig branch and up to date with upstream.'
-  //   );
-  //   process.exit(1);
-  // }
+  if (!isRepositoryClean()) {
+    console.log(
+      'Repository should be clean, on sig branch and up to date with upstream.'
+    );
+    process.exit(1);
+  }
 
   let version = '',tester="";
 
@@ -83,12 +83,12 @@ function runDeployment() {
               );
               
     
-              // const changelogForCurrentVersion = execSync(
-              //   `npm run -s gen:changelog`
-              // ).toString();
-              // updateChangelog(version, changelogForCurrentVersion);
+              const changelogForCurrentVersion = execSync(
+                `npm run -s gen:changelog`
+              ).toString();
+              updateChangelog(version, changelogForCurrentVersion);
     
-              // execSync(`npm publish --dry-run`, { stdio: 'inherit' });
+              execSync(`npm publish --dry-run`, { stdio: 'inherit' });
     
               rl.question(
                 'Are changes good to be published and pushed to the upstream? (yes/no): ',
