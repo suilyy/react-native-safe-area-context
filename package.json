@@ -50,7 +50,7 @@
     "build": "tsc",
     "pack:prod": "npm pack",
     "prepack": "npm run build",
-    "prepublishOnly": "npm run prepack && react-native verify-package-harmony --package-path . --skip-checks oh_package_name_is_derived_from_npm_package_name",
+    "prepublishOnly": "npm run prepack && react-native verify-package-harmony --package-path . --skip-checks oh_package_name_is_derived_from_npm_package_name harmony_directory_contains_only_one_har_file",
     "update_version": "node ./scripts/update-version.js",
     "deploy": "node ./scripts/deploy.js"
   },
