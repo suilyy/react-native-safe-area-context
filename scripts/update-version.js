@@ -5,19 +5,16 @@ const readline = require('readline');
 const { execSync } = require('node:child_process');
 const JSON5 = require('json5');
 
-const PACKAGE_DIR_NAME = 'react-native-safe-area-context';
-const MODULE_NAME = 'safe_area';
+const PACKAGE_DIR_NAME = 'react-native-harmony-reanimated';
+const MODULE_NAME = 'reanimated';
 const PACKAGE_TGZ_STEM_NAME_WITHOUT_VERSION =
-  'rnoh-react-native-safe-area-context';
+  'rnoh-react-native-harmony-reanimated';
 
 (async function main() {
   const newVersionIndex = process.argv.findIndex(
     (arg) => arg === '--new-version'
   );
-  const testerPathIndex = process.argv.findIndex(
-    (arg) => arg === '--tester-path'
-  );
-  let version,testerPath;
+  let version;
 
   if (newVersionIndex !== -1 && process.argv[newVersionIndex + 1]) {
     version = process.argv[newVersionIndex + 1];
@@ -25,25 +22,17 @@ const PACKAGE_TGZ_STEM_NAME_WITHOUT_VERSION =
     const currentVersion = readPackage('.').version;
     version = await askUserForVersion(currentVersion);
   }
-  
-  if (testerPathIndex !== -1 && process.argv[testerPathIndex + 1]) {
-    testerPath = process.argv[testerPathIndex + 1];
-  } else {
-    console.log('Deployment aborted');
-    process.exit(1);
-  }
-
 
   updatePackageVersion('.', version);
   console.log(`Updated ${PACKAGE_DIR_NAME}/package.json`);
-  updatePackageScript(testerPath, version);
+  updatePackageScript('../tester', version);
   console.log('Updated tester/package.json');
   updateOHPackageVersion(
-    `${testerPath}/harmony/${MODULE_NAME}/oh-package.json5`,
+    `../tester/harmony/${MODULE_NAME}/oh-package.json5`,
     version
   );
   console.log(`Updated ${MODULE_NAME}/oh-package.json5`);
-  execSync(`npm i && cd ${testerPath}`, { stdio: 'inherit' });
+  execSync('npm i && cd ../tester', { stdio: 'inherit' });
 })();
 
 /**
