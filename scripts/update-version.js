@@ -5,16 +5,19 @@ const readline = require('readline');
 const { execSync } = require('node:child_process');
 const JSON5 = require('json5');
 
-const PACKAGE_DIR_NAME = 'react-native-harmony-reanimated';
-const MODULE_NAME = 'reanimated';
+const PACKAGE_DIR_NAME = 'react-native-safe-area-context';
+const MODULE_NAME = 'safe_area';
 const PACKAGE_TGZ_STEM_NAME_WITHOUT_VERSION =
-  'rnoh-react-native-harmony-reanimated';
+  'rnoh-react-native-safe-area-context';
 
 (async function main() {
   const newVersionIndex = process.argv.findIndex(
     (arg) => arg === '--new-version'
   );
-  let version;
+  // const testerPathIndex = process.argv.findIndex(
+  //   (arg) => arg === '--tester-path'
+  // );
+  let version,testerPath;
 
   if (newVersionIndex !== -1 && process.argv[newVersionIndex + 1]) {
     version = process.argv[newVersionIndex + 1];
@@ -22,17 +25,31 @@ const PACKAGE_TGZ_STEM_NAME_WITHOUT_VERSION =
     const currentVersion = readPackage('.').version;
     version = await askUserForVersion(currentVersion);
   }
+  
+  // if (testerPathIndex !== -1 && process.argv[testerPathIndex + 1]) {
+  //   testerPath = process.argv[testerPathIndex + 1];
+  // } else {
+  //   console.log('Deployment aborted');
+  //   process.exit(1);
+  // }
+
 
   updatePackageVersion('.', version);
   console.log(`Updated ${PACKAGE_DIR_NAME}/package.json`);
-  updatePackageScript('../tester', version);
-  console.log('Updated tester/package.json');
+  // updatePackageScript(testerPath, version);
+  // console.log('Updated tester/package.json');
+  console.log(
+    `${process.cwd()}/harmony/${MODULE_NAME}/oh-package.json5`);
   updateOHPackageVersion(
-    `../tester/harmony/${MODULE_NAME}/oh-package.json5`,
+    `${process.cwd()}/harmony/${MODULE_NAME}/oh-package.json5`,
     version
   );
-  console.log(`Updated ${MODULE_NAME}/oh-package.json5`);
-  execSync('npm i && cd ../tester', { stdio: 'inherit' });
+  // updateOHPackageVersion(
+  //   `${testerPath}/harmony/${MODULE_NAME}/oh-package.json5`,
+  //   version
+  // );
+  // console.log(`Updated ${MODULE_NAME}/oh-package.json5`);
+  // execSync(`npm i && cd ${testerPath}`, { stdio: 'inherit' });
 })();
 
 /**
@@ -111,8 +128,10 @@ function updatePackageScript(packageDir, version) {
  * @param {string} version
  */
 function updateOHPackageVersion(ohPackagePath, version) {
+  console.log('ohPackageContent',process.cwd() + ohPackagePath, fs.existsSync(process.cwd() + ohPackagePath))
   const ohPackageContent = JSON5.parse(
-    fs.readFileSync(ohPackagePath).toString()
+    
+    fs.readFileSync(ohPackagePath, 'utf8').toString()
   );
   ohPackageContent.version = version;
   fs.writeFileSync(ohPackagePath, JSON5.stringify(ohPackageContent, null, 2));
